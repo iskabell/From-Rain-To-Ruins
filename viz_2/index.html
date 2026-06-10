@@ -81,10 +81,14 @@
                         </p>
 
                         <div class="story-metric-grid">
-                            <div class="story-metric"><strong>tas</strong>: Warmer background conditions help frame why
-                                later floods can carry more atmospheric energy.</div>
+                            <div class="story-metric"><strong>tas</strong>: Warmer background conditions compared with
+                                the 1800s.</div>
                             <div class="story-metric"><strong>pr</strong>: Long-lasting rainfall loaded the Yangtze
-                                basin across multiple provinces.</div>
+                                basin.</div>
+                            <div class="story-metric"><strong>mrro</strong>: Saturated land turned rainfall into
+                                widespread runoff.</div>
+                            <div class="story-metric"><strong>prw</strong>: A warmer atmosphere can act like a larger
+                                moisture sponge.</div>
                         </div>
 
                         <div class="story-region-notes">
@@ -105,9 +109,9 @@
                         <div id="map-annotation" class="map-annotation">
                             <span class="annotation-label">Key pattern</span>
                             <p>
-                                <strong>pr</strong> highlights the basin-wide rainfall pattern,
-                                while <strong>tas</strong> frames the warmer background conditions behind this later
-                                flood.
+                                The Yangtze flood shows a larger basin-wide crisis:
+                                <strong>long rainfall periods saturated the land</strong>,
+                                causing runoff to spread across multiple provinces.
                             </p>
                         </div>
 
@@ -131,9 +135,8 @@
                 <div class="metric-selector">
                     <label for="metric-select">Visualization Metric: </label>
                     <select id="metric-select">
-                        <option value="pr_sum" selected>Total Precipitation (pr_sum)</option>
-                        <option value="pr_mean">Mean Precipitation (pr_mean)</option>
-                        <option value="pr_max">Max Precipitation (pr_max)</option>
+                        <option value="pr_max" selected>Max Precipitation (pr_max)</option>
+                        <option value="tas_max">Max Temperature (tas_max)</option>
                     </select>
                 </div>
             </div>
@@ -170,7 +173,7 @@
     </div>
 
     <a href="../viz_1/index.html" id="btn-back" class="nav-scroll-btn">← Back</a>
-    <a href="../viz_3/index.html" id="btn-next" class="nav-scroll-btn">Next →</a>
+    <a href="../viz_4/index.html" id="btn-next" class="nav-scroll-btn">Next →</a>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
         integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
