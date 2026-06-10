@@ -17,7 +17,14 @@ function parseCSV(text) {
 
         headers.forEach((header, i) => {
             const value = values[i]?.trim();
-            row[header] = isNaN(Number(value)) || value === "" ? value : Number(value);
+            let parsedValue = isNaN(Number(value)) || value === "" ? value : Number(value);
+            
+            // FIX: Convert microscopic precipitation flux (kg/m²/s) to standard mm/day
+            if (header === 'pr_max' && typeof parsedValue === 'number' && parsedValue < 0.01) {
+                parsedValue = parsedValue * 86400;
+            }
+            
+            row[header] = parsedValue;
         });
 
         return row;
@@ -62,7 +69,6 @@ async function loadPrecipitationData(filePath, allowedRegions) {
         const name = getFirstExisting(row, ["name", "Name", "province", "Province", "region", "Region"]);
         const month = normalizeMonth(getFirstExisting(row, ["month", "Month"]));
 
-        // Target map targets the exact column keys passed down by your dataset
         const pr_max = getFirstExisting(row, ["pr_max", "pr max", "Max_PR"]);
         const tas_max = getFirstExisting(row, ["tas_max", "tas max", "Max_TAS"]);
 
@@ -92,17 +98,15 @@ L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
 
 let geojsonLayer;
 let currentMonth = "January";
-let currentMetric = "pr_max"; // Must match HTML select default value
+let currentMetric = "pr_max"; 
 let chartInstances = {};
 
 function getColor(value, metric) {
     if (value === null || value === undefined) return '#e2e8f0';
     
     if (metric === 'pr_max') {
-        // Deep indigo/purple rainfall scale
         return value > 80  ? '#4a148c' : value > 40  ? '#7b1fa2' : value > 15  ? '#9c27b0' : value > 5   ? '#e040fb' : '#f3e5f5';
     } else {
-        // High-contrast orange/red temperature scale
         return value > 42  ? '#b30000' : value > 35  ? '#e34a33' : value > 28  ? '#fc8d59' : value > 18  ? '#fdbb84' : '#fdd49e';
     }
 }
@@ -214,14 +218,13 @@ function generateDailyData(region, month, metric, numDays) {
         let cyclicVar = Math.sin(day * 0.9) * Math.cos(day * 0.4);
 
         if (metric === 'pr_max') {
-            weight = 0.2; // Base scale down for precipitation distributions
+            weight = 0.2; 
             if (month === "July" && day >= 25 && day <= 30) {
                 weight = (region === "KPK" || region === "Punjab") ? 4.5 : 2.0;
             } else if (month === "August" && day >= 5 && day <= 12) {
                 weight = 3.2; 
             }
         } else {
-            // Temperature cycle modeling logic (slightly warmer in mid-month)
             weight = 1.0 + (Math.sin((day / numDays) * Math.PI) * 0.1);
         }
 
@@ -285,7 +288,14 @@ function initLineCharts() {
                         min: currentMetric === 'pr_max' ? 0 : Math.floor(globalMin * 0.9),
                         max: globalMax > 0 ? globalMax * 1.1 : 10,
                         display: isLeftmost, 
-                        ticks: { color: '#bfdbfe', font: { size: 9 } }, 
+                        ticks: { 
+                            color: '#bfdbfe', 
+                            font: { size: 9 },
+                            // FIX: Rounds long floats cleanly and drops scientific notation
+                            callback: function(value) {
+                                return Number(value).toFixed(1);
+                            }
+                        }, 
                         grid: { color: isLeftmost ? 'rgba(125, 211, 252, 0.08)' : 'transparent' },
                         title: {
                             display: isLeftmost,
