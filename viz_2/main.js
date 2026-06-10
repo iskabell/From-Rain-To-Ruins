@@ -1,4 +1,4 @@
-// main.js - Map Logic, Slider Controls & Synced Multi-Region Charts
+// main.js - Map Logic, Slider Controls & Synced Multi-Region Charts (Updated for pr_max & tas_max)
 
 const DATA_FILE = "../data/df_1998.csv";
 let precipitationData = [];
@@ -57,79 +57,29 @@ async function loadPrecipitationData(filePath, allowedRegions) {
     const text = await response.text();
     const rows = parseCSV(text);
 
-    const firstRow = rows[0] || {};
-
-    const hasMonthlyAggregates =
-        firstRow.pr_sum !== undefined &&
-        firstRow.pr_mean !== undefined &&
-        firstRow.pr_max !== undefined;
-
-    if (hasMonthlyAggregates) {
-        return rows.map(row => {
-            const name = getFirstExisting(row, ["name", "Name", "province", "Province", "region", "Region"]);
-            const month = normalizeMonth(getFirstExisting(row, ["month", "Month"]));
-
-            return {
-                name,
-                month,
-                pr_sum: Number(row.pr_sum),
-                pr_mean: Number(row.pr_mean),
-                pr_max: Number(row.pr_max)
-            };
-        }).filter(row =>
-            row.name &&
-            row.month &&
-            allowedRegions.some(region => region.toLowerCase() === String(row.name).toLowerCase())
-        );
-    }
-
-    const grouped = {};
-
-    rows.forEach(row => {
+    return rows.map(row => {
         const name = getFirstExisting(row, ["name", "Name", "province", "Province", "region", "Region"]);
         const month = normalizeMonth(getFirstExisting(row, ["month", "Month"]));
+        
+        // Convert pr_max from kg/m^2/s to mm/day
+        let rawPr = row.pr_max !== undefined ? Number(row.pr_max) : 0;
+        let convertedPr = rawPr * 86400; 
 
-        const prValue = Number(getFirstExisting(row, [
-            "pr",
-            "precipitation",
-            "rain",
-            "rainfall",
-            "value",
-            "pr_max"
-        ]));
-
-        if (!name || !month || Number.isNaN(prValue)) return;
-
-        const matchedRegion = allowedRegions.find(
-            region => region.toLowerCase() === String(name).toLowerCase()
-        );
-
-        if (!matchedRegion) return;
-
-        const key = `${matchedRegion}-${month}`;
-
-        if (!grouped[key]) {
-            grouped[key] = {
-                name: matchedRegion,
-                month,
-                values: []
-            };
-        }
-
-        grouped[key].values.push(prValue);
-    });
-
-    return Object.values(grouped).map(group => {
-        const values = group.values;
+        // Convert tas_max from Kelvin to Celsius
+        let rawTas = row.tas_max !== undefined ? Number(row.tas_max) : 273.15;
+        let convertedTas = rawTas - 273.15;
 
         return {
-            name: group.name,
-            month: group.month,
-            pr_sum: values.reduce((a, b) => a + b, 0),
-            pr_mean: values.reduce((a, b) => a + b, 0) / values.length,
-            pr_max: Math.max(...values)
+            name,
+            month,
+            pr_max: convertedPr,
+            tas_max: convertedTas
         };
-    });
+    }).filter(row =>
+        row.name &&
+        row.month &&
+        allowedRegions.some(region => region.toLowerCase() === String(row.name).toLowerCase())
+    );
 }
 
 const chinaProvincesGeoJSON = {
@@ -153,17 +103,15 @@ L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
 
 let geojsonLayer;
 let currentMonth = "January";
-let currentMetric = "pr_sum";
+let currentMetric = "pr_max";
 let chartInstances = {};
 
 function getColor(value, metric) {
     if (value === null || value === undefined) return '#e2e8f0';
-    if (metric === 'pr_sum') {
-        return value > 200 ? '#084594' : value > 120 ? '#2171b5' : value > 60  ? '#4292c6' : value > 15  ? '#9ecae1' : '#f7fbff';
-    } else if (metric === 'pr_mean') {
-        return value > 6   ? '#005a32' : value > 4   ? '#41ab5d' : value > 2   ? '#74c476' : value > 0.5 ? '#c7e9c0' : '#f7fcf5';
+    if (metric === 'pr_max') {
+        return value > 15 ? '#4a148c' : value > 8 ? '#7b1fa2' : value > 4 ? '#9c27b0' : value > 1 ? '#e040fb' : '#f3e5f5';
     } else {
-        return value > 12  ? '#4a148c' : value > 8   ? '#7b1fa2' : value > 4   ? '#9c27b0' : value > 1.5 ? '#e040fb' : '#f3e5f5';
+        return value > 30 ? '#b71c1c' : value > 20 ? '#e65100' : value > 10 ? '#f57c00' : value > 0 ? '#ffb74d' : '#fff3e0';
     }
 }
 
@@ -212,11 +160,10 @@ infoPanel.onAdd = function () {
 };
 infoPanel.update = function (props) {
     if (props) {
-        const valSum = getMetricValue(props.name, currentMonth, 'pr_sum');
-        const valMean = getMetricValue(props.name, currentMonth, 'pr_mean');
-        const valMax = getMetricValue(props.name, currentMonth, 'pr_max');
+        const valMaxPr = getMetricValue(props.name, currentMonth, 'pr_max');
+        const valMaxTas = getMetricValue(props.name, currentMonth, 'tas_max');
         this._div.innerHTML = `<h4>${props.name} Province</h4><b>Month:</b> ${currentMonth}<br/><br/>` +
-            (valSum !== null ? `Total Precipitation: <b>${valSum.toFixed(2)}</b> mm<br/>Mean Precipitation: <b>${valMean.toFixed(2)}</b> mm<br/>Max Precipitation: <b>${valMax.toFixed(2)}</b> mm` : `<span class="no-data-msg">No data found</span>`);
+            (valMaxPr !== null ? `Max Precipitation: <b>${valMaxPr.toFixed(2)}</b> mm<br/>Max Temperature: <b>${valMaxTas.toFixed(1)}</b> °C` : `<span class="no-data-msg">No data found</span>`);
     } else {
         this._div.innerHTML = '<h4>Province Statistics</h4>Hover over a province';
     }
@@ -232,15 +179,12 @@ mapLegend.onAdd = function () {
 mapLegend.updateLegend = function() {
     let grades;
     this._div.innerHTML = `<h4>Legend</h4>`;
-    if (currentMetric === 'pr_sum') {
-        grades = [0, 15, 60, 120, 200];
-        this._div.innerHTML += `<strong>Precipitation (mm)</strong><br>`;
-    } else if (currentMetric === 'pr_mean') {
-        grades = [0, 0.5, 2, 4, 6];
-        this._div.innerHTML += `<strong>Mean Daily (mm)</strong><br>`;
+    if (currentMetric === 'pr_max') {
+        grades = [0, 1, 4, 8, 15];
+        this._div.innerHTML += `<strong>Max Precip (mm/day)</strong><br>`;
     } else {
-        grades = [0, 1.5, 4, 8, 12];
-        this._div.innerHTML += `<strong>Max Recorded (mm)</strong><br>`;
+        grades = [-10, 0, 10, 20, 30];
+        this._div.innerHTML += `<strong>Max Temp (°C)</strong><br>`;
     }
     for (let i = 0; i < grades.length; i++) {
         this._div.innerHTML += '<i style="background:' + getColor(grades[i] + 0.01, currentMetric) + '"></i> ' +
@@ -256,8 +200,6 @@ function updateMapLayer() {
     mapLegend.updateLegend();
 }
 
-// ── SYNCED HORIZONTAL MULTI-CHART DAILY LOGIC WITH LOCKED Y-AXIS SCALE ──
-
 function getDaysInMonth(monthName) {
     const monthDays = {
         "January": 31, "February": 28, "March": 31, "April": 30, 
@@ -272,32 +214,22 @@ function generateDailyData(region, month, metric, numDays) {
     if (monthlyAggregate === null) return [];
 
     let dailyPoints = [];
-    if (metric === 'pr_sum') {
-        const baseDaily = monthlyAggregate / numDays;
-        for (let day = 1; day <= numDays; day++) {
-            let variance = Math.sin(day * 0.8) * Math.cos(day * 0.3);
-            let dailyVal = baseDaily * (1 + variance * 0.9);
-            dailyPoints.push(Math.max(0, dailyVal));
-        }
-    } else if (metric === 'pr_mean') {
-        for (let day = 1; day <= numDays; day++) {
-            let variance = Math.sin(day * 0.5) * 0.4;
-            dailyPoints.push(Math.max(0, monthlyAggregate + variance));
-        }
-    } else {
+    if (metric === 'pr_max') {
         for (let day = 1; day <= numDays; day++) {
             let spikeFactor = Math.abs(Math.sin(day * 1.2));
             if (day % 7 === 0) spikeFactor = 1.0; 
-            dailyPoints.push(monthlyAggregate * (0.2 + spikeFactor * 0.8));
+            dailyPoints.push(monthlyAggregate * (0.1 + spikeFactor * 0.9));
+        }
+    } else {
+        for (let day = 1; day <= numDays; day++) {
+            let variance = Math.sin(day * 0.2) * 4; 
+            dailyPoints.push(monthlyAggregate - Math.abs(variance));
         }
     }
     return dailyPoints;
 }
 
-// ── SIDE-BY-SIDE DAILY LOGIC WITH CUSTOM DISTINCT AXIS LABELS & COLORS ──
-
 function initLineCharts() {
-    // New high-contrast distinct color scheme
     const colors = { 
         "Anhui": "#4ade80",   // Vivid Neon Green
         "Hubei": "#38bdf8",   // Electric Blue
@@ -316,19 +248,24 @@ function initLineCharts() {
     const dayLabels = Array.from({ length: totalDays }, (_, i) => (i + 1).toString());
 
     let allGeneratedData = {};
-    let globalMax = 0;
+    let globalMax = -999;
+    let globalMin = 999;
 
     regions.forEach(region => {
         const dataArr = generateDailyData(region, currentMonth, currentMetric, totalDays);
         allGeneratedData[region] = dataArr;
-        const regionalMax = Math.max(...dataArr, 0);
-        if (regionalMax > globalMax) globalMax = regionalMax;
+        
+        let rMax = Math.max(...dataArr);
+        let rMin = Math.min(...dataArr);
+        if (rMax > globalMax) globalMax = rMax;
+        if (rMin < globalMin) globalMin = rMin;
     });
 
-    const sharedYMax = globalMax * 1.15;
+    let finalYMin = currentMetric === 'pr_max' ? 0 : Math.floor(globalMin - 2);
+    let finalYMax = Math.ceil(globalMax * 1.15);
 
     regions.forEach(region => {
-        const isLeftmost = (region === "Anhui"); // Check if this is the most left plot
+        const isLeftmost = (region === "Anhui");
         const ctx = document.getElementById(`chart-${region.toLowerCase()}`).getContext('2d');
         
         chartInstances[region] = new Chart(ctx, {
@@ -353,9 +290,8 @@ function initLineCharts() {
                 plugins: { legend: { display: false } },
                 scales: {
                     y: { 
-                        beginAtZero: true,
-                        min: 0,
-                        max: sharedYMax > 0 ? sharedYMax : 10,
+                        min: finalYMin,
+                        max: finalYMax,
                         display: isLeftmost, 
                         ticks: { 
                             color: '#bfdbfe', 
@@ -366,8 +302,8 @@ function initLineCharts() {
                         },
                         title: {
                             display: isLeftmost,
-                            text: 'Precipitation (mm/day)',
-                            color: '#bfdbfe', // Swapped to match x-axis label color perfectly
+                            text: currentMetric === 'pr_max' ? 'Precipitation (mm)' : 'Temperature (°C)',
+                            color: '#bfdbfe', 
                             font: { size: 10, weight: 'bold' }
                         }
                     },
@@ -377,7 +313,7 @@ function initLineCharts() {
                         title: {
                             display: true,
                             text: 'Days',
-                            color: '#bfdbfe', // Matches here
+                            color: '#bfdbfe', 
                             font: { size: 10, weight: '600' }
                         }
                     }
@@ -392,16 +328,21 @@ function updateAllLineCharts() {
     const dayLabels = Array.from({ length: totalDays }, (_, i) => (i + 1).toString());
 
     let allGeneratedData = {};
-    let globalMax = 0;
+    let globalMax = -999;
+    let globalMin = 999;
 
     regions.forEach(region => {
         const dataArr = generateDailyData(region, currentMonth, currentMetric, totalDays);
         allGeneratedData[region] = dataArr;
-        const regionalMax = Math.max(...dataArr, 0);
-        if (regionalMax > globalMax) globalMax = regionalMax;
+        
+        let rMax = Math.max(...dataArr);
+        let rMin = Math.min(...dataArr);
+        if (rMax > globalMax) globalMax = rMax;
+        if (rMin < globalMin) globalMin = rMin;
     });
 
-    const sharedYMax = globalMax * 1.15;
+    let finalYMin = currentMetric === 'pr_max' ? 0 : Math.floor(globalMin - 2);
+    let finalYMax = Math.ceil(globalMax * 1.15);
 
     regions.forEach(region => {
         const chart = chartInstances[region];
@@ -409,8 +350,12 @@ function updateAllLineCharts() {
 
         chart.data.labels = dayLabels;
         chart.data.datasets[0].data = allGeneratedData[region];
-        chart.options.scales.y.max = sharedYMax > 0 ? sharedYMax : 10;
-        
+        chart.data.datasets[0].label = currentMetric;
+        chart.options.scales.y.min = finalYMin;
+        chart.options.scales.y.max = finalYMax;
+        if (chart.options.scales.y.title) {
+            chart.options.scales.y.title.text = currentMetric === 'pr_max' ? 'Precipitation (mm)' : 'Temperature (°C)';
+        }
         chart.update('none'); 
     });
 }
@@ -469,7 +414,7 @@ window.addEventListener('load', async function() {
     });
 })();
 
-// Timed annotation: show for 10 seconds, then fade into a button
+// Timed annotation control logic
 document.addEventListener("DOMContentLoaded", () => {
   const annotation = document.getElementById("map-annotation");
   const toggleButton = document.getElementById("annotation-toggle");

@@ -85,10 +85,14 @@
                         </p>
 
                         <div class="story-metric-grid">
-                            <div class="story-metric"><strong>tas</strong>: Shows the earlier temperature baseline
-                                before the strongest modern warming signal.</div>
-                            <div class="story-metric"><strong>pr</strong>: Heavy rainfall helped push the Yellow River
-                                beyond its controls.</div>
+                            <div class="story-metric"><strong>tas</strong>: Near-surface air temperature; historical
+                                baseline, not extreme modern warming.</div>
+                            <div class="story-metric"><strong>pr</strong>: Heavy rainfall helped push the river beyond
+                                its controls.</div>
+                            <div class="story-metric"><strong>mrro</strong>: Runoff spread across the flat North China
+                                Plain after the dike failure.</div>
+                            <div class="story-metric"><strong>prw</strong>: Atmospheric moisture was important, but not
+                                as amplified by modern warming.</div>
                         </div>
 
                         <div class="story-region-notes">
@@ -108,8 +112,9 @@
                         <div id="map-annotation" class="map-annotation">
                             <span class="annotation-label">Key pattern</span>
                             <p>
-                                <strong>pr</strong> shows where heavy rainfall stressed the Yellow River system,
-                                while <strong>tas</strong> gives the cooler historical baseline for comparison.
+                                Earlier flooding was catastrophic even without modern heat extremes.
+                                Here, <strong>flat lowlands, heavy rain, and dike failure</strong>
+                                turned river overflow into widespread inland flooding.
                             </p>
                         </div>
 
@@ -134,9 +139,8 @@
                 <div class="metric-selector">
                     <label for="metric-select">Visualization Metric: </label>
                     <select id="metric-select">
-                        <option value="pr_sum" selected>Total Precipitation (pr_sum)</option>
-                        <option value="pr_mean">Mean Precipitation (pr_mean)</option>
-                        <option value="pr_max">Max Precipitation (pr_max)</option>
+                        <option value="pr_max" selected>Max Precipitation (pr_max)</option>
+                        <option value="tas_max">Max Temperature (tas_max)</option>
                     </select>
                 </div>
             </div>
