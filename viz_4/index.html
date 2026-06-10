@@ -113,12 +113,13 @@
                                 <span>Dec</span>
                             </div>
                         </div>
+                        
                         <div class="metric-selector">
-                            <label for="metric-select">Visualization Metric: </label>
-                            <select id="metric-select">
-                                <option value="pr_max" selected>Max Precipitation (pr_max)</option>
-                                <option value="tas_max">Max Temperature (tas_max)</option>
-                            </select>
+                            <span class="selector-label">Visualization Metric:</span>
+                            <div class="metric-btn-group" style="display: inline-flex; gap: 8px; margin-left: 10px;">
+                                <button type="button" class="metric-toggle-btn active" data-metric="pr_max">Max Precipitation</button>
+                                <button type="button" class="metric-toggle-btn" data-metric="tas_max">Max Temperature</button>
+                            </div>
                         </div>
                     </div>
 
@@ -159,6 +160,21 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
         integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <script src="main.js"></script>
+    
+    <script>
+        document.querySelectorAll('.metric-toggle-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                // Deactivate current active button selection
+                document.querySelectorAll('.metric-toggle-btn').forEach(btn => btn.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Emulate standard change event dispatch to update Leaflet layers and Chart JS sub-components
+                currentMetric = this.getAttribute('data-metric');
+                updateMapLayer();
+                updateAllLineCharts();
+            });
+        });
+    </script>
 </body>
 
 </html>

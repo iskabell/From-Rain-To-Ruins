@@ -177,18 +177,22 @@ mapLegend.onAdd = function () {
     return this._div;
 };
 mapLegend.updateLegend = function() {
-    let grades;
     this._div.innerHTML = `<h4>Legend</h4>`;
+    
     if (currentMetric === 'pr_max') {
-        grades = [0, 1, 4, 8, 15];
         this._div.innerHTML += `<strong>Max Precip (mm/day)</strong><br>`;
+        this._div.innerHTML += `<i style="background:${getColor(0.5, 'pr_max')}"></i> 0&ndash;1<br>`;
+        this._div.innerHTML += `<i style="background:${getColor(2.0, 'pr_max')}"></i> 1&ndash;4<br>`;
+        this._div.innerHTML += `<i style="background:${getColor(5.0, 'pr_max')}"></i> 4&ndash;8<br>`;
+        this._div.innerHTML += `<i style="background:${getColor(10.0, 'pr_max')}"></i> 8&ndash;15<br>`;
+        this._div.innerHTML += `<i style="background:${getColor(16.0, 'pr_max')}"></i> 15+`;
     } else {
-        grades = [-10, 0, 10, 20, 30];
         this._div.innerHTML += `<strong>Max Temp (°C)</strong><br>`;
-    }
-    for (let i = 0; i < grades.length; i++) {
-        this._div.innerHTML += '<i style="background:' + getColor(grades[i] + 0.01, currentMetric) + '"></i> ' +
-            grades[i] + (grades[i + 1] ? '&ndash;' + grades[i + 1] + '<br>' : '+');
+        this._div.innerHTML += `<i style="background:${getColor(-5, 'tas_max')}"></i> &lt;0<br>`;
+        this._div.innerHTML += `<i style="background:${getColor(5, 'tas_max')}"></i> 0&ndash;10<br>`;
+        this._div.innerHTML += `<i style="background:${getColor(15, 'tas_max')}"></i> 10&ndash;20<br>`;
+        this._div.innerHTML += `<i style="background:${getColor(25, 'tas_max')}"></i> 20&ndash;30<br>`;
+        this._div.innerHTML += `<i style="background:${getColor(35, 'tas_max')}"></i> 30+`;
     }
 };
 mapLegend.addTo(map);
@@ -230,19 +234,8 @@ function generateDailyData(region, month, metric, numDays) {
 }
 
 function initLineCharts() {
-    const colors = { 
-        "Anhui": "#4ade80",   // Vivid Neon Green
-        "Hubei": "#38bdf8",   // Electric Blue
-        "Hunan": "#c084fc",   // Vibrant Purple
-        "Jiangsu": "#f472b6"  // Hot Pink
-    };
-    
-    const bgColors = { 
-        "Anhui": "rgba(74, 222, 128, 0.03)", 
-        "Hubei": "rgba(56, 189, 248, 0.03)", 
-        "Hunan": "rgba(192, 132, 252, 0.03)", 
-        "Jiangsu": "rgba(244, 114, 182, 0.03)" 
-    };
+    const colors = { "Anhui": "#4ade80", "Hubei": "#38bdf8", "Hunan": "#c084fc", "Jiangsu": "#f472b6" };
+    const bgColors = { "Anhui": "rgba(74, 222, 128, 0.12)", "Hubei": "rgba(56, 189, 248, 0.12)", "Hunan": "rgba(192, 132, 252, 0.12)", "Jiangsu": "rgba(244, 114, 182, 0.12)" };
 
     const totalDays = getDaysInMonth(currentMonth);
     const dayLabels = Array.from({ length: totalDays }, (_, i) => (i + 1).toString());
@@ -265,7 +258,6 @@ function initLineCharts() {
     let finalYMax = Math.ceil(globalMax * 1.15);
 
     regions.forEach(region => {
-        const isLeftmost = (region === "Anhui");
         const ctx = document.getElementById(`chart-${region.toLowerCase()}`).getContext('2d');
         
         chartInstances[region] = new Chart(ctx, {
@@ -292,19 +284,20 @@ function initLineCharts() {
                     y: { 
                         min: finalYMin,
                         max: finalYMax,
-                        display: isLeftmost, 
+                        display: true, 
                         ticks: { 
                             color: '#bfdbfe', 
-                            font: { size: 9 } 
+                            font: { size: 9 },
+                            callback: function(value) {
+                                return Number(value).toFixed(1);
+                            }
                         }, 
-                        grid: { 
-                            color: isLeftmost ? 'rgba(125, 211, 252, 0.08)' : 'transparent' 
-                        },
+                        grid: { color: 'rgba(125, 211, 252, 0.08)' },
                         title: {
-                            display: isLeftmost,
-                            text: currentMetric === 'pr_max' ? 'Precipitation (mm)' : 'Temperature (°C)',
+                            display: true,
+                            text: currentMetric === 'pr_max' ? 'Precip (mm)' : 'Temp (°C)',
                             color: '#bfdbfe', 
-                            font: { size: 10, weight: 'bold' }
+                            font: { size: 9, weight: 'bold' }
                         }
                     },
                     x: { 
@@ -354,16 +347,15 @@ function updateAllLineCharts() {
         chart.options.scales.y.min = finalYMin;
         chart.options.scales.y.max = finalYMax;
         if (chart.options.scales.y.title) {
-            chart.options.scales.y.title.text = currentMetric === 'pr_max' ? 'Precipitation (mm)' : 'Temperature (°C)';
+            chart.options.scales.y.title.text = currentMetric === 'pr_max' ? 'Precip (mm)' : 'Temp (°C)';
         }
         chart.update('none'); 
     });
 }
 
-// ── CONTROL EVENT LISTENERS ──
+// ── CONTROL EVENT LISTENERS (UPDATED FOR BUTTON TOGGLES) ──
 const slider = document.getElementById('month-slider');
 const monthDisplay = document.getElementById('month-display');
-const metricSelect = document.getElementById('metric-select');
 
 slider.addEventListener('input', function(e) {
     currentMonth = months[e.target.value];
@@ -372,10 +364,18 @@ slider.addEventListener('input', function(e) {
     updateAllLineCharts(); 
 });
 
-metricSelect.addEventListener('change', function(e) {
-    currentMetric = e.target.value;
-    updateMapLayer();
-    updateAllLineCharts();
+// Watch for clicks across all metric group button trays instead of a dropdown box change event
+document.querySelectorAll('.metric-toggle-btn').forEach(button => {
+    button.addEventListener('click', function() {
+        // Toggle active button style classes dynamically
+        document.querySelectorAll('.metric-toggle-btn').forEach(btn => btn.classList.remove('active'));
+        this.classList.add('active');
+        
+        // Extract selected metric choice from data-attribute and push structural layout redraws
+        currentMetric = this.getAttribute('data-metric');
+        updateMapLayer();
+        updateAllLineCharts();
+    });
 });
 
 window.addEventListener('load', async function() {
@@ -392,9 +392,7 @@ window.addEventListener('load', async function() {
     if (!intro) return;
 
     const eyebrow = intro.querySelector(".flood-eyebrow");
-    const line1 = document.getElementById("flood-line1");
     const line2 = document.getElementById("flood-line2");
-    const body = document.getElementById("flood-body");
     const cta = document.getElementById("flood-cta");
 
     function show(el, delay) {
@@ -403,10 +401,8 @@ window.addEventListener('load', async function() {
     }
 
     show(eyebrow, 400);
-    show(line1, 900);
-    show(line2, 1700);
-    show(body, 2700);
-    show(cta, 3500);
+    show(line2, 1200);
+    show(cta, 2200);
 
     if (cta) cta.addEventListener("click", () => {
         intro.classList.add("fade-out");
@@ -429,11 +425,9 @@ document.addEventListener("DOMContentLoaded", () => {
   function showAnnotation() {
     annotation.classList.remove("is-hidden");
     toggleButton.classList.remove("is-visible");
-
     setTimeout(hideAnnotation, 10000);
   }
 
   setTimeout(hideAnnotation, 10000);
-
   toggleButton.addEventListener("click", showAnnotation);
 });

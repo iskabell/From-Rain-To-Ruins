@@ -21,15 +21,6 @@
                 dike failure allowed water to spread across the low-lying North China Plain, causing catastrophic inland
                 flooding before modern industrial warming.
             </h2>
-            <!-- <h2 class="flood-headline" id="flood-line2">
-                CMIP6 precipitation data helps us see<br>
-                <span class="flood-accent">where flood-related climate conditions intensify.</span>
-            </h2>
-            <p class="flood-body" id="flood-body">
-                Explore historical flood regions, zoom into affected areas,<br>
-                and use the year slider to see how precipitation-based flood indicators<br>
-                change from 1850 to 2010.
-            </p> -->
             <button id="flood-cta">
                 Explore the map <span class="flood-arrow">→</span>
             </button>
@@ -39,25 +30,14 @@
         <div class="header-content">
             <div class="eyebrow">Allie Shi • Isabel Yang • Vanessa Nguyen</div>
             <h1>Yellow River Flood: 1887</h1>
-            <!-- <p class="subtitle">This interactive visualization uses regional historical precipitation data to explore annual trends, precipitation variances, and climate variables near major flood basins.</p> -->
         </div>
     </header>
 
     <div id="container">
-        <!-- <section class="intro-card">
-            <h2>Project Overview</h2>
-            <p>This project uses regional meteorological data to examine climate conditions that contribute to catastrophic basin overflows. Instead of focusing on simple average trends, the dashboard exposes multi-metric profiles across target impact areas.</p>
-            <p>Use the event selectors below to highlight historical zones, scrub the time framework slider across months, and swap visualization variables to watch regional climate dynamics react.</p>
-        </section> -->
-
         <section class="viz-card">
-            <div class="section-heading">
-                <!-- <h2>Yellow River Flood: 1887</h2> -->
-                <!-- <p>Click a target flood zone to focus on the affected geography. Use the month slider and selector to cycle data matrices.</p> -->
-            </div>
+            <div class="section-heading"></div>
 
             <div class="dashboard-layout">
-
                 <div class="map-story-row">
                     <aside class="story-panel">
                         <div class="story-step">01 Historical Baseline</div>
@@ -89,10 +69,6 @@
                                 baseline, not extreme modern warming.</div>
                             <div class="story-metric"><strong>pr</strong>: Heavy rainfall helped push the river beyond
                                 its controls.</div>
-                            <!-- <div class="story-metric"><strong>mrro</strong>: Runoff spread across the flat North China
-                                Plain after the dike failure.</div>
-                            <div class="story-metric"><strong>prw</strong>: Atmospheric moisture was important, but not
-                                as amplified by modern warming.</div> -->
                         </div>
 
                         <div class="story-region-notes">
@@ -123,7 +99,6 @@
                         </button>
                     </div>
                 </div>
-
             </div>
 
             <div id="controls">
@@ -136,12 +111,13 @@
                         <span>Dec</span>
                     </div>
                 </div>
+
                 <div class="metric-selector">
-                    <label for="metric-select">Visualization Metric: </label>
-                    <select id="metric-select">
-                        <option value="pr_max" selected>Max Precipitation (pr_max)</option>
-                        <option value="tas_max">Max Temperature (tas_max)</option>
-                    </select>
+                    <span class="selector-label">Visualization Metric:</span>
+                    <div class="metric-btn-group">
+                        <button type="button" class="metric-toggle-btn active" data-metric="pr_max">Max Precipitation</button>
+                        <button type="button" class="metric-toggle-btn" data-metric="tas_max">Max Temperature</button>
+                    </div>
                 </div>
             </div>
 

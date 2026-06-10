@@ -15,16 +15,11 @@
     <div id="flood-intro">
         <div id="flood-intro-inner">
             <p class="flood-eyebrow">A global crisis</p>
-
             <h2 class="flood-headline" id="flood-line2">
                 This flood destroyed approximately 4.97 million houses and severely damaged another 11 million. <span
                     class="flood-accent">4.97 million</span> houses were completely destroyed, and another 11 million
                 homes were severely damaged.
-                <!-- <span class="flood-accent">where flood-related climate conditions intensify.</span> -->
             </h2>
-            <!-- <p class="flood-body" id="flood-body">
-                The floodwaters submerged over <strong>25 million</strong> hectares (61 million acres) of crucial agricultural cropland, wiping out seasonal food supplies and farming livelihoods across central and eastern China.
-            </p> -->
             <button id="flood-cta">
                 Explore the map <span class="flood-arrow">→</span>
             </button>
@@ -34,26 +29,12 @@
         <div class="header-content">
             <div class="eyebrow">Allie Shi • Isabel Yang • Vanessa Nguyen</div>
             <h1>Yangtze River Flood: 1998</h1>
-            <!-- <p class="subtitle">This interactive visualization uses regional historical precipitation data to explore annual trends, precipitation variances, and climate variables near major flood basins.</p> -->
         </div>
     </header>
 
     <div id="container">
-        <!-- <section class="intro-card">
-            <h2>Project Overview</h2>
-            <p>The floods affected over <strong>180 million</strong> people—roughly equivalent to the population of multiple European countries combined.</p>
-            <p>Approximately <strong>4.97 million</strong> houses were completely destroyed, and another 11 million homes were severely damaged.</p>
-            <p>The floodwaters submerged over <strong>25 million</strong> hectares (61 million acres) of crucial agricultural cropland, wiping out seasonal food supplies and farming livelihoods across central and eastern China.</p>
-        </section> -->
-
         <section class="viz-card">
-            <!-- <div class="section-heading">
-                <h2>Yangtze River Flood: 1998</h2>
-                <p>Click a target flood zone to focus on the affected geography. Use the month slider and metric selector to dynamically shift all regional historical profiles synchronously.</p>
-            </div> -->
-
             <div class="dashboard-layout">
-
                 <div class="map-story-row">
                     <aside class="story-panel">
                         <div class="story-step">02 Warming Escalation</div>
@@ -85,10 +66,6 @@
                                 the 1800s.</div>
                             <div class="story-metric"><strong>pr</strong>: Long-lasting rainfall loaded the Yangtze
                                 basin.</div>
-                            <!-- <div class="story-metric"><strong>mrro</strong>: Saturated land turned rainfall into
-                                widespread runoff.</div>
-                            <div class="story-metric"><strong>prw</strong>: A warmer atmosphere can act like a larger
-                                moisture sponge.</div> -->
                         </div>
 
                         <div class="story-region-notes">
@@ -132,12 +109,13 @@
                         <span>Dec</span>
                     </div>
                 </div>
+                
                 <div class="metric-selector">
-                    <label for="metric-select">Visualization Metric: </label>
-                    <select id="metric-select">
-                        <option value="pr_max" selected>Max Precipitation (pr_max)</option>
-                        <option value="tas_max">Max Temperature (tas_max)</option>
-                    </select>
+                    <span class="selector-label">Visualization Metric:</span>
+                    <div class="metric-btn-group">
+                        <button type="button" class="metric-toggle-btn active" data-metric="pr_max">Max Precipitation</button>
+                        <button type="button" class="metric-toggle-btn" data-metric="tas_max">Max Temperature</button>
+                    </div>
                 </div>
             </div>
 
@@ -167,8 +145,6 @@
                     </div>
                 </div>
             </div>
-
-
         </section>
     </div>
 
