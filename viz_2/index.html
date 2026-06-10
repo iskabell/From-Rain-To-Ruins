@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>China Monthly Precipitation Map</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div id="flood-intro">
+        <div id="flood-intro-inner">
+            <p class="flood-eyebrow">A global crisis</p>
+
+            <h2 class="flood-headline" id="flood-line2">
+                This flood destroyed approximately 4.97 million houses and severely damaged another 11 million. <span
+                    class="flood-accent">4.97 million</span> houses were completely destroyed, and another 11 million
+                homes were severely damaged.
+                <!-- <span class="flood-accent">where flood-related climate conditions intensify.</span> -->
+            </h2>
+            <!-- <p class="flood-body" id="flood-body">
+                The floodwaters submerged over <strong>25 million</strong> hectares (61 million acres) of crucial agricultural cropland, wiping out seasonal food supplies and farming livelihoods across central and eastern China.
+            </p> -->
+            <button id="flood-cta">
+                Explore the map <span class="flood-arrow">→</span>
+            </button>
+        </div>
+    </div>
+    <header>
+        <div class="header-content">
+            <div class="eyebrow">Precipitation Data • Historical Floods • DSC 106</div>
+            <h1>Yangtze River Flood: 1998</h1>
+            <!-- <p class="subtitle">This interactive visualization uses regional historical precipitation data to explore annual trends, precipitation variances, and climate variables near major flood basins.</p> -->
+        </div>
+    </header>
+
+    <div id="container">
+        <!-- <section class="intro-card">
+            <h2>Project Overview</h2>
+            <p>The floods affected over <strong>180 million</strong> people—roughly equivalent to the population of multiple European countries combined.</p>
+            <p>Approximately <strong>4.97 million</strong> houses were completely destroyed, and another 11 million homes were severely damaged.</p>
+            <p>The floodwaters submerged over <strong>25 million</strong> hectares (61 million acres) of crucial agricultural cropland, wiping out seasonal food supplies and farming livelihoods across central and eastern China.</p>
+        </section> -->
+
+        <section class="viz-card">
+            <!-- <div class="section-heading">
+                <h2>Yangtze River Flood: 1998</h2>
+                <p>Click a target flood zone to focus on the affected geography. Use the month slider and metric selector to dynamically shift all regional historical profiles synchronously.</p>
+            </div> -->
+
+            <div class="dashboard-layout">
+
+                <div class="map-story-row">
+                    <aside class="story-panel">
+                        <div class="story-step">02 Warming Escalation</div>
+
+                        <h2>Yangtze River Flood</h2>
+                        <div class="story-time">1998 → Central + Eastern China</div>
+
+                        <p>
+                            The 1998 Yangtze River Flood shows the escalation stage. Compared with
+                            1887, this flood happened in a warmer world, where the atmosphere could
+                            hold more moisture and release heavier rainfall over a longer period.
+                        </p>
+
+                        <p>
+                            Instead of one single dike failure causing the whole disaster, this event
+                            overwhelmed a much larger river system. Persistent rainfall, saturated
+                            soils, lakes, tributaries, and downstream provinces all became connected
+                            into one large inland flood crisis.
+                        </p>
+
+                        <p>
+                            This is where the project’s argument becomes clearer:
+                            <strong>more heat can support more moisture, more rainfall, and more runoff</strong>,
+                            making inland flooding harder to contain.
+                        </p>
+
+                        <div class="story-metric-grid">
+                            <div class="story-metric"><strong>tas</strong>: Warmer background conditions help frame why
+                                later floods can carry more atmospheric energy.</div>
+                            <div class="story-metric"><strong>pr</strong>: Long-lasting rainfall loaded the Yangtze
+                                basin across multiple provinces.</div>
+                        </div>
+
+                        <div class="story-region-notes">
+                            <h3>Province notes</h3>
+                            <ul>
+                                <li><strong>Hubei:</strong> Important middle-Yangtze region around Wuhan.</li>
+                                <li><strong>Hunan:</strong> Connected to Dongting Lake and flood storage pressure.</li>
+                                <li><strong>Anhui:</strong> Shows downstream vulnerability after upstream rainfall.</li>
+                                <li><strong>Jiangsu:</strong> Represents lower-basin flood risk closer to the coast.
+                                </li>
+                            </ul>
+                        </div>
+                    </aside>
+
+                    <div id="map-wrapper">
+                        <div id="map"></div>
+
+                        <div id="map-annotation" class="map-annotation">
+                            <span class="annotation-label">Key pattern</span>
+                            <p>
+                                <strong>pr</strong> highlights the basin-wide rainfall pattern,
+                                while <strong>tas</strong> frames the warmer background conditions behind this later
+                                flood.
+                            </p>
+                        </div>
+
+                        <button id="annotation-toggle" class="annotation-toggle" type="button">
+                            Key pattern
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="controls" style="margin: 15px 0; padding: 10px 0;">
+                <div class="slider-box">
+                    <div class="slider-label">Month: <span id="month-display"
+                            style="color: #3182ce; font-size: 18px;">January</span></div>
+                    <div class="slider-container">
+                        <span>Jan</span>
+                        <input type="range" id="month-slider" min="0" max="11" value="0">
+                        <span>Dec</span>
+                    </div>
+                </div>
+                <div class="metric-selector">
+                    <label for="metric-select">Visualization Metric: </label>
+                    <select id="metric-select">
+                        <option value="pr_sum" selected>Total Precipitation (pr_sum)</option>
+                        <option value="pr_mean">Mean Precipitation (pr_mean)</option>
+                        <option value="pr_max">Max Precipitation (pr_max)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="charts-grid">
+                <div class="chart-card" id="card-anhui">
+                    <h3>Anhui Province Trend</h3>
+                    <div class="chart-container-box">
+                        <canvas id="chart-anhui"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card" id="card-hubei">
+                    <h3>Hubei Province Trend</h3>
+                    <div class="chart-container-box">
+                        <canvas id="chart-hubei"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card" id="card-hunan">
+                    <h3>Hunan Province Trend</h3>
+                    <div class="chart-container-box">
+                        <canvas id="chart-hunan"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card" id="card-jiangsu">
+                    <h3>Jiangsu Province Trend</h3>
+                    <div class="chart-container-box">
+                        <canvas id="chart-jiangsu"></canvas>
+                    </div>
+                </div>
+            </div>
+
+
+        </section>
+    </div>
+
+    <a href="../viz_1/index.html" id="btn-back" class="nav-scroll-btn">← Back</a>
+    <a href="../viz_3/index.html" id="btn-next" class="nav-scroll-btn">Next →</a>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script src="main.js"></script>
+</body>
+
+</html>

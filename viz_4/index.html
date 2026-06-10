@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pakistan Monthly Precipitation Map (2010)</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div id="flood-intro">
+        <div id="flood-intro-inner">
+            <p class="flood-eyebrow">A National Catastrophe</p>
+
+            <h2 class="flood-headline" id="flood-line2">
+                The 2010 floods submerged <span class="flood-accent">one-fifth</span> of Pakistan's total land area,
+                directly affecting over 20 million people.
+            </h2>
+            <button id="flood-cta">
+                Explore the Data Map <span class="flood-arrow">→</span>
+            </button>
+        </div>
+    </div>
+    <header>
+        <div class="header-content">
+            <div class="eyebrow">Precipitation Data • Monsoon Floods • DSC 106</div>
+            <h1>Pakistan Super Floods: 2010</h1>
+        </div>
+    </header>
+
+    <div id="container">
+        <section class="viz-card">
+            <div class="dashboard-layout">
+
+                <div class="dashboard-layout">
+
+                    <div class="map-story-row">
+                        <aside class="story-panel">
+                            <div class="story-step">04 Peak Inland Flooding</div>
+
+                            <h2>Pakistan Super Floods</h2>
+                            <div class="story-time">2010 → Indus River Basin</div>
+
+                            <p>
+                                The 2010 Pakistan floods are the strongest modern inland-flood example
+                                in this sequence. Extreme monsoon rainfall overwhelmed the Indus River
+                                system and pushed floodwaters across a huge connected basin.
+                            </p>
+
+                            <p>
+                                Compared with the earlier floods, Pakistan shows the clearest connection
+                                between <strong>heat, atmospheric moisture, precipitation, and runoff</strong>.
+                                The flood did not stay limited to one city or one valley; it moved through
+                                mountain regions, agricultural plains, and downstream provinces.
+                            </p>
+
+                            <p>
+                                This is the project’s final escalation point: as the atmosphere holds more
+                                moisture, rainfall extremes can become more severe, and runoff can turn
+                                regional storms into national-scale inland flood disasters.
+                            </p>
+
+                            <div class="story-metric-grid">
+                                <div class="story-metric"><strong>tas</strong>: Warmer background conditions helped
+                                    frame the extreme monsoon environment.</div>
+                                <div class="story-metric"><strong>pr</strong>: Heavy monsoon rainfall supplied the
+                                    floodwater across the Indus basin.</div>
+                            </div>
+
+                            <div class="story-region-notes">
+                                <h3>Province notes</h3>
+                                <ul>
+                                    <li><strong>Khyber Pakhtunkhwa:</strong> Hit hard by upstream rainfall and mountain
+                                        runoff.</li>
+                                    <li><strong>Punjab:</strong> Dense agricultural and urban areas faced major river
+                                        flooding.</li>
+                                    <li><strong>Sindh:</strong> Downstream province where floodwaters continued south.
+                                    </li>
+                                    <li><strong>Balochistan:</strong> Shows the flood impact extended beyond only the
+                                        main Indus channel.</li>
+                                </ul>
+                            </div>
+                        </aside>
+
+                        <div id="map-wrapper">
+                            <div id="map"></div>
+
+                            <div id="map-annotation" class="map-annotation">
+                                <span class="annotation-label">Key pattern</span>
+                                <p>
+                                    <strong>pr</strong> highlights the intense monsoon rainfall pattern,
+                                    while <strong>tas</strong> frames the warm background conditions around the flood.
+                                </p>
+                            </div>
+
+                            <button id="annotation-toggle" class="annotation-toggle" type="button">
+                                Key pattern
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="controls" style="margin: 15px 0; padding: 10px 0;">
+                        <div class="slider-box">
+                            <div class="slider-label">Month: <span id="month-display"
+                                    style="color: #3182ce; font-size: 18px;">January</span></div>
+                            <div class="slider-container">
+                                <span>Jan</span>
+                                <input type="range" id="month-slider" min="0" max="11" value="0">
+                                <span>Dec</span>
+                            </div>
+                        </div>
+                        <div class="metric-selector">
+                            <label for="metric-select">Visualization Metric: </label>
+                            <select id="metric-select">
+                                <option value="pr_sum" selected>Total Precipitation (pr_sum)</option>
+                                <option value="pr_mean">Mean Precipitation (pr_mean)</option>
+                                <option value="pr_max">Max Precipitation (pr_max)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="charts-grid">
+                        <div class="chart-card" id="card-kpk">
+                            <h3>Khyber Pakhtunkhwa (KPK)</h3>
+                            <div class="chart-container-box">
+                                <canvas id="chart-kpk"></canvas>
+                            </div>
+                        </div>
+                        <div class="chart-card" id="card-punjab">
+                            <h3>Punjab Province</h3>
+                            <div class="chart-container-box">
+                                <canvas id="chart-punjab"></canvas>
+                            </div>
+                        </div>
+                        <div class="chart-card" id="card-sindh">
+                            <h3>Sindh Province</h3>
+                            <div class="chart-container-box">
+                                <canvas id="chart-sindh"></canvas>
+                            </div>
+                        </div>
+                        <div class="chart-card" id="card-balochistan">
+                            <h3>Balochistan Province</h3>
+                            <div class="chart-container-box">
+                                <canvas id="chart-balochistan"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+        </section>
+    </div>
+
+    <a href="../viz_3/index.html" id="btn-back" class="nav-scroll-btn">← Back</a>
+    <a href="../final_page/index.html" id="btn-next" class="nav-scroll-btn">Final Takeaway →</a>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script src="main.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>From Rain to Ruins</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="rain">
+    <span style="left:2%; animation-duration:1.8s; animation-delay: -0.5s;"></span>
+    <span style="left:6%; animation-duration:2.1s; animation-delay: -1.2s;"></span>
+    <span style="left:10%; animation-duration:1.7s; animation-delay: -0.2s;"></span>
+    <span style="left:14%; animation-duration:2.2s; animation-delay: -1.5s;"></span>
+    <span style="left:18%; animation-duration:1.9s; animation-delay: -0.9s;"></span>
+    <span style="left:22%; animation-duration:2.0s; animation-delay: -0.4s;"></span>
+    <span style="left:26%; animation-duration:1.8s; animation-delay: -1.1s;"></span>
+    <span style="left:30%; animation-duration:2.3s; animation-delay: -0.7s;"></span>
+    <span style="left:34%; animation-duration:1.6s; animation-delay: -1.8s;"></span>
+    <span style="left:38%; animation-duration:2.1s; animation-delay: -0.3s;"></span>
+    <span style="left:42%; animation-duration:1.9s; animation-delay: -1.4s;"></span>
+    <span style="left:46%; animation-duration:2.0s; animation-delay: -0.8s;"></span>
+    <span style="left:50%; animation-duration:1.8s; animation-delay: -0.1s;"></span>
+    <span style="left:54%; animation-duration:2.2s; animation-delay: -1.6s;"></span>
+    <span style="left:58%; animation-duration:1.7s; animation-delay: -0.5s;"></span>
+    <span style="left:62%; animation-duration:2.0s; animation-delay: -1.2s;"></span>
+    <span style="left:66%; animation-duration:1.9s; animation-delay: -0.2s;"></span>
+    <span style="left:70%; animation-duration:2.1s; animation-delay: -1.4s;"></span>
+    <span style="left:74%; animation-duration:1.8s; animation-delay: -0.7s;"></span>
+    <span style="left:78%; animation-duration:2.0s; animation-delay: -1.0s;"></span>
+    <span style="left:82%; animation-duration:1.9s; animation-delay: -0.3s;"></span>
+    <span style="left:86%; animation-duration:2.1s; animation-delay: -1.7s;"></span>
+    <span style="left:90%; animation-duration:1.8s; animation-delay: -0.6s;"></span>
+</div>
+
+<section class="hero">
+    <div class="content">
+        <h1>FROM RAIN TO RUINS</h1>
+        <p>
+            Rainfall nourishes ecosystems and replenishes water supplies.
+            But when precipitation exceeds absorption capacity,
+            flooding transforms entire communities in hours.
+        </p>
+        <div class="scroll-indicator">Scroll to Explore ↓</div>
+    </div>
+</section>
+
+<section class="cloud-scene">
+    <div class="cloud-layer layer-bg"></div>
+    <div class="cloud-layer layer-mid"></div>
+    <div class="cloud-story-container">
+        <div class="story-step">
+            <h2>01 / THE ACCUMULATION</h2>
+            <p>As global temperatures rise, the atmosphere holds roughly 7% more moisture for every 1°C of warming. When a storm system stalls, it traps massive volumes of precipitable water inside dense, super-saturated cloud columns.</p>
+        </div>
+        
+        <div class="story-step">
+            <h2>02 / THE TRIGGER</h2>
+            <p>When atmospheric currents shift, the retention threshold breaks. Extreme precipitation dumps weeks worth of water in a matter of hours—far outstripping the ground's natural ability to filter or absorb the sudden weight.</p>
+        </div>
+
+        <div class="story-step">
+            <h2>03 / THE IMPACT</h2>
+            <p>Saturated soils trigger immediate, violent runoff. Natural riverbanks breach, flash floods tear through infrastructure, and communities are submerged under a relentless wall of water, transforming vibrant landscapes into ruins.</p>
+        </div>
+    </div>
+    <div class="cloud-layer layer-fg"></div>
+</section>
+
+<section class="map">
+    <div class="map-background">
+        <div class="map-frame">
+            <img src="images/world.svg" class="world-map" alt="World Map">
+            
+            <div class="ping usa"></div>
+            <div class="ping germany"></div>
+            <div class="ping pakistan"></div>
+            <div class="ping libya"></div>
+            <div class="ping china"></div>
+        </div>
+    </div>
+
+    <div class="map-content">
+        <h2 class="typewriter-title"></h2>
+        <p class="typewriter-text"></p>
+        <button class="explore-btn">Explore the Data</button>
+    </div>
+</section>
+
+<script>
+const titleText = "Flooding is now a global pattern";
+const paragraphText = `Over the past two years, floods have affected nearly every region of the world. \nIn West and Central Africa, 7.2 million people were affected in 2024, while nearly 2 million people in Central Europe faced extreme flood events.`;
+
+const titleEl = document.querySelector(".typewriter-title");
+const paraEl = document.querySelector(".typewriter-text");
+const btn = document.querySelector(".explore-btn");
+
+let started = false;
+
+/* Typewriter Engine */
+function typeText(el, text, speed, cb) {
+    let i = 0;
+    el.textContent = "";
+
+    function type() {
+        if (i < text.length) {
+            el.textContent += text[i++];
+            setTimeout(type, speed);
+        } else if (cb) {
+            cb();
+        }
+    }
+    type();
+}
+
+/* Intersection Scroll Observer (Fires typing when map is halfway in view) */
+window.addEventListener("scroll", () => {
+    const mapSection = document.querySelector(".map");
+    const rect = mapSection.getBoundingClientRect();
+
+    if (!started && rect.top < window.innerHeight * 0.5) {
+        started = true;
+        
+        // Dynamic cascading typewriter execution
+        typeText(titleEl, titleText, 50, () => {
+            typeText(paraEl, paragraphText, 25, () => {
+                btn.classList.add("show");
+            });
+        });
+    }
+});
+</script>
+<script src="main.js"></script>
+
+</body>
+</html>

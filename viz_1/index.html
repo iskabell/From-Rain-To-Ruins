@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>China Monthly Precipitation Map</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div id="flood-intro">
+        <div id="flood-intro-inner">
+            <p class="flood-eyebrow">A historical baseline</p>
+
+            <h2 class="flood-headline" id="flood-line1">
+                The 1887 Yellow River Flood was one of China’s deadliest flood disasters. Heavy rainfall and a major
+                dike failure allowed water to spread across the low-lying North China Plain, causing catastrophic inland
+                flooding before modern industrial warming.
+            </h2>
+            <!-- <h2 class="flood-headline" id="flood-line2">
+                CMIP6 precipitation data helps us see<br>
+                <span class="flood-accent">where flood-related climate conditions intensify.</span>
+            </h2>
+            <p class="flood-body" id="flood-body">
+                Explore historical flood regions, zoom into affected areas,<br>
+                and use the year slider to see how precipitation-based flood indicators<br>
+                change from 1850 to 2010.
+            </p> -->
+            <button id="flood-cta">
+                Explore the map <span class="flood-arrow">→</span>
+            </button>
+        </div>
+    </div>
+    <header>
+        <div class="header-content">
+            <div class="eyebrow">Precipitation Data • Historical Floods • DSC 106</div>
+            <h1>Yellow River Flood: 1887</h1>
+            <!-- <p class="subtitle">This interactive visualization uses regional historical precipitation data to explore annual trends, precipitation variances, and climate variables near major flood basins.</p> -->
+        </div>
+    </header>
+
+    <div id="container">
+        <!-- <section class="intro-card">
+            <h2>Project Overview</h2>
+            <p>This project uses regional meteorological data to examine climate conditions that contribute to catastrophic basin overflows. Instead of focusing on simple average trends, the dashboard exposes multi-metric profiles across target impact areas.</p>
+            <p>Use the event selectors below to highlight historical zones, scrub the time framework slider across months, and swap visualization variables to watch regional climate dynamics react.</p>
+        </section> -->
+
+        <section class="viz-card">
+            <div class="section-heading">
+                <!-- <h2>Yellow River Flood: 1887</h2> -->
+                <!-- <p>Click a target flood zone to focus on the affected geography. Use the month slider and selector to cycle data matrices.</p> -->
+            </div>
+
+            <div class="dashboard-layout">
+
+                <div class="map-story-row">
+                    <aside class="story-panel">
+                        <div class="story-step">01 Historical Baseline</div>
+
+                        <h2>Yellow River Flood</h2>
+                        <div class="story-time">1887 → North China Plain</div>
+
+                        <p>
+                            The 1887 Yellow River Flood represents the project’s earlier baseline.
+                            This disaster happened before modern industrial warming became the dominant
+                            climate signal, so the flood was shaped more by <strong>heavy rain,
+                                dike failure, flat terrain, and river control problems</strong>.
+                        </p>
+
+                        <p>
+                            The flood was still catastrophic because the Yellow River sits above parts
+                            of the surrounding plain from centuries of sediment buildup. Once the dikes
+                            failed, water spread quickly across low-lying farmland and settlements.
+                        </p>
+
+                        <p>
+                            In this event, the temperature signal was not as intense as later floods,
+                            so the story is less about extreme heat and more about how rainfall and
+                            runoff became deadly when the basin had very little drainage room.
+                        </p>
+
+                        <div class="story-metric-grid">
+                            <div class="story-metric"><strong>tas</strong>: Shows the earlier temperature baseline
+                                before the strongest modern warming signal.</div>
+                            <div class="story-metric"><strong>pr</strong>: Heavy rainfall helped push the Yellow River
+                                beyond its controls.</div>
+                        </div>
+
+                        <div class="story-region-notes">
+                            <h3>Province notes</h3>
+                            <ul>
+                                <li><strong>Henan:</strong> Closest to the major breach area and central to the flood
+                                    story.</li>
+                                <li><strong>Hebei:</strong> Shows broader North China Plain exposure.</li>
+                                <li><strong>Shandong:</strong> Represents downstream lowland flood risk.</li>
+                            </ul>
+                        </div>
+                    </aside>
+
+                    <div id="map-wrapper">
+                        <div id="map"></div>
+
+                        <div id="map-annotation" class="map-annotation">
+                            <span class="annotation-label">Key pattern</span>
+                            <p>
+                                <strong>pr</strong> shows where heavy rainfall stressed the Yellow River system,
+                                while <strong>tas</strong> gives the cooler historical baseline for comparison.
+                            </p>
+                        </div>
+
+                        <button id="annotation-toggle" class="annotation-toggle" type="button">
+                            Key pattern
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+
+            <div id="controls">
+                <div class="slider-box">
+                    <div class="slider-label">Month: <span id="month-display"
+                            style="color: #3182ce; font-size: 18px;">January</span></div>
+                    <div class="slider-container">
+                        <span>Jan</span>
+                        <input type="range" id="month-slider" min="0" max="11" value="0">
+                        <span>Dec</span>
+                    </div>
+                </div>
+                <div class="metric-selector">
+                    <label for="metric-select">Visualization Metric: </label>
+                    <select id="metric-select">
+                        <option value="pr_sum" selected>Total Precipitation (pr_sum)</option>
+                        <option value="pr_mean">Mean Precipitation (pr_mean)</option>
+                        <option value="pr_max">Max Precipitation (pr_max)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="charts-grid">
+                <div class="chart-card" id="card-hebei">
+                    <h3>Hebei Province Trend</h3>
+                    <div class="chart-container-box">
+                        <canvas id="chart-hebei"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card" id="card-henan">
+                    <h3>Henan Province Trend</h3>
+                    <div class="chart-container-box">
+                        <canvas id="chart-henan"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card" id="card-shandong">
+                    <h3>Shandong Province Trend</h3>
+                    <div class="chart-container-box">
+                        <canvas id="chart-shandong"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <a href="../index.html" id="btn-back" class="nav-scroll-btn">← Back</a>
+    <a href="../viz_2/index.html" id="btn-next" class="nav-scroll-btn">Next →</a>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script src="main.js"></script>
+</body>
+
+</html>

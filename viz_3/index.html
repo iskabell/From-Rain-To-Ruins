@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vargas Tragedy Monthly Precipitation Map (1999)</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div id="flood-intro">
+        <div id="flood-intro-inner">
+            <p class="flood-eyebrow">Flash Floods • Landslides • Debris Flows</p>
+
+            <h2 class="flood-headline" id="flood-line2">
+                In December 1999, extreme rainfall triggered <span class="flood-accent">flash floods and debris
+                    flows</span> along Venezuela’s coastal mountains.
+            </h2>
+            <button id="flood-cta">
+                Explore the map <span class="flood-arrow">→</span>
+            </button>
+        </div>
+    </div>
+    <header>
+        <div class="header-content">
+            <div class="eyebrow">Precipitation Data • Historical Torrential Floods • DSC 106</div>
+            <h1>Vargas Tragedy: 1999</h1>
+        </div>
+    </header>
+
+    <div id="container">
+        <section class="viz-card">
+            <div class="dashboard-layout">
+
+                <div class="dashboard-layout">
+
+                    <div class="map-story-row">
+                        <aside class="story-panel">
+                            <div class="story-step">03 Flash Flood Intensity</div>
+
+                            <h2>Vargas Tragedy</h2>
+                            <div class="story-time">1999 → Venezuela Coastal Mountains</div>
+
+                            <p>
+                                The Vargas Tragedy was not a hurricane. It was a rainfall-driven disaster
+                                where extreme precipitation triggered <strong>flash floods, landslides,
+                                    mudslides, and debris flows</strong> along Venezuela’s steep coastal mountains.
+                            </p>
+
+                            <p>
+                                This flood is different from the Yellow River and Yangtze events because
+                                the danger came from intensity and terrain. When moisture-heavy air hit
+                                the mountains, rainfall concentrated quickly, and runoff rushed downhill
+                                instead of spreading slowly across a flat river basin.
+                            </p>
+
+                            <p>
+                                In the project storyline, Vargas shows how warming and moisture can create
+                                not just bigger floods, but also faster and more violent inland runoff.
+                            </p>
+
+                            <div class="story-metric-grid">
+                                <div class="story-metric"><strong>tas</strong>: Warmer background conditions can support
+                                    stronger rainfall-producing environments.</div>
+                                <div class="story-metric"><strong>pr</strong>: Extreme precipitation was the direct
+                                    trigger for the flash flooding.</div>
+                            </div>
+
+                            <div class="story-region-notes">
+                                <h3>Region notes</h3>
+                                <ul>
+                                    <li><strong>Vargas / La Guaira:</strong> Core disaster zone along the coastal
+                                        mountain front.</li>
+                                    <li><strong>Distrito Capital:</strong> Nearby urban exposure around Caracas.</li>
+                                    <li><strong>Miranda:</strong> Shows broader north-central coastal impact.</li>
+                                </ul>
+                            </div>
+                        </aside>
+
+                        <div id="map-wrapper">
+                            <div id="map"></div>
+
+                            <div id="map-annotation" class="map-annotation">
+                                <span class="annotation-label">Key pattern</span>
+                                <p>
+                                    <strong>pr</strong> captures the extreme rainfall burst along the coastal mountains,
+                                    while <strong>tas</strong> frames the warm conditions around the event.
+                                </p>
+                            </div>
+
+                            <button id="annotation-toggle" class="annotation-toggle" type="button">
+                                Key pattern
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="controls" style="margin: 15px 0; padding: 10px 0;">
+                        <div class="slider-box">
+                            <div class="slider-label">Month: <span id="month-display"
+                                    style="color: #3182ce; font-size: 18px;">December</span></div>
+                            <div class="slider-container">
+                                <span>Jan</span>
+                                <input type="range" id="month-slider" min="0" max="11" value="11">
+                                <span>Dec</span>
+                            </div>
+                        </div>
+                        <div class="metric-selector">
+                            <label for="metric-select">Visualization Metric: </label>
+                            <select id="metric-select">
+                                <option value="pr_sum" selected>Total Precipitation (pr_sum)</option>
+                                <option value="pr_mean">Mean Precipitation (pr_mean)</option>
+                                <option value="pr_max">Max Precipitation (pr_max)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="charts-grid">
+                        <div class="chart-card" id="card-la-guaira">
+                            <h3>Vargas / La Guaira Trend</h3>
+                            <div class="chart-container-box">
+                                <canvas id="chart-la-guaira"></canvas>
+                            </div>
+                        </div>
+                        <div class="chart-card" id="card-distrito-capital">
+                            <h3>Distrito Capital Trend</h3>
+                            <div class="chart-container-box">
+                                <canvas id="chart-distrito-capital"></canvas>
+                            </div>
+                        </div>
+                        <div class="chart-card" id="card-miranda">
+                            <h3>Miranda Trend</h3>
+                            <div class="chart-container-box">
+                                <canvas id="chart-miranda"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+        </section>
+    </div>
+
+    <a href="../viz_2/index.html" id="btn-back" class="nav-scroll-btn">← Back</a>
+    <a href="../viz_4/index.html" id="btn-next" class="nav-scroll-btn">Next →</a>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script src="main.js"></script>
+</body>
+
+</html>

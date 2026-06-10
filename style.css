@@ -1,0 +1,407 @@
+/* ==========================================================================
+   1. GLOBAL ARCHITECTURE & SETUP
+   ========================================================================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Montserrat', sans-serif;
+    background: #04080b; /* Uniform base dark color */
+    color: #ffffff;
+    overflow-x: hidden;
+}
+
+/* ==========================================================================
+   2. WEATHER LAYER: GLOBAL FALLING RAIN
+   ========================================================================== */
+.rain {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 100; /* Stays above sections but behind text components if needed */
+}
+
+.rain span {
+    position: absolute;
+    top: -110px;
+    width: 2px;
+    height: 90px;
+    background: linear-gradient(transparent, rgba(255,255,255,0.7));
+    opacity: 0.6;
+    animation: rainfall linear infinite;
+}
+
+@keyframes rainfall {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(115vh); }
+}
+
+/* ==========================================================================
+   3. CINEMATIC LANDING VIEW (HERO)
+   ========================================================================== */
+.hero {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    position: relative;
+    z-index: 2;
+    padding: 0 40px;
+}
+
+.hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+        linear-gradient(rgba(4, 8, 11, 0.5), rgba(4, 8, 11, 0.85)),
+        url("images/flooding.jpg");
+    background-size: cover;
+    background-position: center;
+    z-index: -1;
+}
+
+.hero .content {
+    max-width: 850px;
+}
+
+h1 {
+    font-size: 4rem;
+    font-weight: 800;
+    letter-spacing: 2px;
+    margin-bottom: 20px;
+}
+
+.hero p {
+    font-size: 1.3rem;
+    line-height: 1.8;
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.scroll-indicator {
+    margin-top: 50px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    color: #9fe8ff;
+    opacity: 0.8;
+    animation: bounce 2.2s infinite;
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(10px); }
+}
+
+/* ==========================================================================
+   4. SCROLL PARALLAX SYSTEM: DENSE STORM CLOUDS
+   ========================================================================== */
+.cloud-scene {
+    position: relative;
+    height: 300vh; /* Expands scroll runway to create deep immersion distance */
+    background: #04080b;
+    z-index: 10;
+    
+    /* Alpha masks dynamically blur & dissolve the top and bottom edges smoothly */
+    mask-image: linear-gradient(to bottom, transparent 0%, black 12%, black 88%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 12%, black 88%, transparent 100%);
+}
+
+.cloud-layer {
+    position: sticky;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background-size: cover;
+    background-position: center;
+    pointer-events: none;
+    mix-blend-mode: screen; /* Converts black areas of pictures directly to alpha clarity */
+}
+
+
+.cloud-layer.layer-bg {
+    background-image: url('images/c1.png');
+    opacity: 0.4;
+    transform: scale(1.1);
+}
+
+.cloud-layer.layer-mid {
+    background-image: url('images/c3.svg'); 
+    background-size: 500px; 
+    background-repeat: repeat;
+    background-position: 20% 40%; 
+    opacity: 0.5;
+}
+
+.cloud-layer.layer-fg {
+    background-image: url('images/clouds.png');
+    opacity: 0.85;
+    filter: blur(4px) contrast(1.3) brightness(0.3); 
+    transform: scale(1.4);
+}
+
+.cloud-text {
+    position: sticky;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 100%;
+    text-align: center;
+    z-index: 11;
+    padding: 0 20px;
+    pointer-events: none;
+}
+
+.cloud-text h2 {
+    font-size: 2.2rem;
+    font-weight: 300;
+    letter-spacing: 8px;
+    color: rgba(159, 232, 255, 0.5);
+    text-shadow: 0 0 25px rgba(159, 232, 255, 0.15);
+    text-transform: uppercase;
+}
+
+/* Modern CSS scroll-driven kinematics */
+@supports (animation-timeline: view()) {
+    .cloud-layer.layer-fg {
+        animation: flyPast linear both;
+        animation-timeline: view();
+        animation-range: exit-crossing;
+    }
+    .cloud-layer.layer-mid {
+        animation: driftUp linear both;
+        animation-timeline: view();
+        animation-range: exit-crossing;
+    }
+    .cloud-text h2 {
+        animation: fadeOutText linear both;
+        animation-timeline: view();
+        animation-range: exit-crossing;
+    }
+}
+
+@keyframes flyPast { to { transform: scale(1.9) translateY(-100vh); opacity: 0; } }
+@keyframes driftUp { to { transform: scale(1.15) translateY(-35vh); opacity: 0; } }
+@keyframes fadeOutText { to { opacity: 0; transform: translateY(-50px); } }
+
+/* ==========================================================================
+   5. TACTICAL MAP DISPLAY INTERFACE
+   ========================================================================== */
+.map {
+    min-height: 100vh;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    background: #04080b;
+    z-index: 5;
+}
+
+.map-background {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1;
+}
+
+/* Responsive aspect-ratio box protects map layout proportions across all devices */
+.map-frame {
+    position: relative;
+    width: 200vw;
+    max-width: 5000px;
+    aspect-ratio: 16 / 8;
+    transform: scale(1.2); 
+    
+    transform-origin: center center;
+}
+
+.world-map {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    opacity: 0.45;
+    filter: grayscale(100%) brightness(0.5) contrast(1.2) blur(1px)
+            drop-shadow(0 0 12px rgba(79,182,255,0.2))
+            drop-shadow(0 0 35px rgba(31,127,255,0.1));
+}
+
+.map-frame::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: radial-gradient(circle at center, rgba(4,8,11,0.1) 0%, rgba(4,8,11,0.6) 60%, rgba(4,8,11,0.95) 100%);
+}
+
+/* Radar Location Pings */
+.ping {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #9fe8ff;
+    box-shadow: 0 0 12px #9fe8ff;
+    transform: translate(-50%, -50%);
+}
+
+.ping::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    border: 2px solid #9fe8ff;
+    animation: ripple 3.5s infinite ease-out;
+}
+
+@keyframes ripple {
+    0% { transform: scale(1); opacity: 0.8; }
+    100% { transform: scale(6); opacity: 0; }
+}
+
+/* Absolute Coordinate Placements mapped safely to 16:8 frame */
+.usa { left: 22%; top: 37%; }
+.germany { left: 51%; top: 29%; }
+.pakistan { left: 66%; top: 38%; }
+.libya { left: 52%; top: 48%; }
+.china { left: 76%; top: 39%; }
+
+/* ==========================================================================
+   6. TEXT OVERLAY & ACTION ACCESS ELEMENTS
+   ========================================================================== */
+.map-content {
+    position: relative;
+    z-index: 6;
+    max-width: 850px;
+    text-align: center;
+    padding: 40px;
+}
+
+.typewriter-title {
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: #ffffff;
+    margin-bottom: 20px;
+    min-height: 2.5rem;
+}
+
+.typewriter-text {
+    font-size: 1.3rem;
+    line-height: 1.8;
+    color: rgba(255, 255, 255, 0.8);
+    white-space: pre-line;
+    min-height: 5rem;
+}
+
+.explore-btn {
+    margin-top: 35px;
+    padding: 14px 32px;
+    background: rgba(159, 232, 255, 0.08);
+    border: 1px solid rgba(159, 232, 255, 0.5);
+    color: #9fe8ff;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    letter-spacing: 1px;
+    cursor: pointer;
+    border-radius: 30px;
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    opacity: 0;
+    transform: translateY(20px);
+    pointer-events: none;
+}
+
+.explore-btn.show {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+}
+
+.explore-btn:hover {
+    background: rgba(159, 232, 255, 0.25);
+    transform: translateY(-2px);
+    box-shadow: 0 0 25px rgba(159, 232, 255, 0.3);
+}
+
+/* ==========================================================================
+   📖 STABLE CLOUD NARRATIVE SCROLL SYSTEM
+   ========================================================================== */
+.cloud-story-container {
+    position: absolute;
+    inset: 0;
+    z-index: 15;
+    max-width: 850px;
+    margin: 0 auto;
+    padding: 0 20px;
+    
+    /* Using display grid lets us space out our narrative markers explicitly 
+       across the full 300vh height track */
+    display: grid;
+    grid-template-rows: repeat(3, 1fr);
+}
+
+.story-step {
+    /* Each block takes up exactly 1/3 of the 300vh track (100vh of scroll room) */
+    height: 100vh; 
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+/* Adjust layout alignment positions within the track */
+.story-step.step-01 { justify-content: flex-start; padding-top: 15vh; } /* Appears early */
+.story-step.step-02 { justify-content: center; }                         /* In the thick of it */
+.story-step.step-03 { justify-content: flex-end; padding-bottom: 15vh; } /* Appears just before map transition */
+
+.story-step h2 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    letter-spacing: 4px;
+    color: #9fe8ff;
+    margin-bottom: 20px;
+    text-shadow: 0 0 15px rgba(159, 232, 255, 0.4);
+}
+
+.story-step p {
+    font-size: 1.5rem;
+    font-weight: 300;
+    line-height: 1.8;
+    color: rgba(255, 255, 255, 0.9);
+    text-shadow: 0 2px 12px rgba(0, 0, 0, 0.9);
+}
+
+/* ==========================================================================
+   ⚡ FINE-TUNED VIEWPORT ANIMATION Progress
+   ========================================================================== */
+@supports (animation-timeline: view()) {
+    .story-step {
+        animation: fadeStep linear both;
+        animation-timeline: view();
+        
+        /* Adjusted range to turn text on/off sharper as it passes through the center */
+        animation-range: entry 5% exit 95%;
+    }
+}
+
+@keyframes fadeStep {
+    0% {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    25%, 75% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+}
