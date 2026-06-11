@@ -100,9 +100,9 @@ section {
 /* ── BULLETPROOF CONTROLS PANEL ── */
 #controls {
     background: rgba(7, 19, 31, 0.6);
-    padding: 20px;
+    padding: 35px 100px; /* UPDATED: Added safety padding to left and right edges */
     border-radius: 8px;
-    margin-bottom: 20px;
+    margin-bottom: 40px;
     border: 1px solid rgba(125, 211, 252, 0.15);
     display: flex;
     flex-direction: column;
@@ -117,6 +117,7 @@ section {
     align-items: center;
     gap: 24px;
     width: 100%;
+    padding: 0 4px; /* Extra micro-padding baseline protection */
 }
 
 .slider-label {
@@ -124,7 +125,6 @@ section {
     font-size: 16px;
     color: #f8fafc;
     white-space: nowrap;
-    min-width: 160px;
 }
 
 #monthLabel {
@@ -176,10 +176,11 @@ input[type=range]::-webkit-slider-thumb:hover {
 /* ── METRIC TOGGLE BUTTONS ── */
 .metric-selector {
     display: flex;
-    gap: 12px;
+    gap: 24px;
     align-items: center;
     width: 100%;
     margin-top: 5px;
+    padding: 0 4px; /* Extra micro-padding baseline protection */
 }
 
 .metric-selector .selector-label {
@@ -187,13 +188,14 @@ input[type=range]::-webkit-slider-thumb:hover {
     font-weight: 600;
     color: #f8fafc;
     letter-spacing: 0.02em;
+    white-space: nowrap;
 }
 
 .metric-btn-group {
     display: inline-flex;
     background: rgba(15, 23, 42, 0.6);
     padding: 4px;
-    gap: 6px; /* ADDED SPACE BETWEEN BUTTONS */
+    gap: 6px; 
     border-radius: 8px;
     border: 1px solid rgba(125, 211, 252, 0.12);
 }
@@ -674,13 +676,6 @@ input[type=range]::-webkit-slider-thumb:hover {
     }
     .chart-card {
         height: 180px;
-    }
-    .slider-box {
-        grid-template-columns: 1fr;
-        gap: 12px;
-    }
-    .slider-label {
-        min-width: 0;
     }
 }
 
