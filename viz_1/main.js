@@ -172,11 +172,17 @@ function highlightFeature(e) {
     layer.setStyle({ weight: 3, color: '#4a5568', dashArray: '', fillOpacity: 0.9 });
     layer.bringToFront();
     infoPanel.update(layer.feature.properties);
+    
+    const card = document.getElementById(`card-${layer.feature.properties.name.toLowerCase()}`);
+    if (card) card.style.borderColor = '#38bdf8';
 }
 
 function resetHighlight(e) {
     geojsonLayer.resetStyle(e.target);
     infoPanel.update();
+    
+    const card = document.getElementById(`card-${e.target.feature.properties.name.toLowerCase()}`);
+    if (card) card.style.borderColor = 'rgba(125, 211, 252, 0.15)';
 }
 
 function zoomToFeature(e) {
@@ -212,18 +218,22 @@ mapLegend.onAdd = function (map) {
     return this._div;
 };
 mapLegend.updateLegend = function() {
-    let grades;
     this._div.innerHTML = `<h4>Legend</h4>`;
+    
     if (currentMetric === 'pr_max') {
-        grades = [0, 1, 4, 8, 15];
         this._div.innerHTML += `<strong>Max Precip (mm/day)</strong><br>`;
+        this._div.innerHTML += `<i style="background:${getColor(0.5, 'pr_max')}"></i> 0&ndash;1<br>`;
+        this._div.innerHTML += `<i style="background:${getColor(2.0, 'pr_max')}"></i> 1&ndash;4<br>`;
+        this._div.innerHTML += `<i style="background:${getColor(5.0, 'pr_max')}"></i> 4&ndash;8<br>`;
+        this._div.innerHTML += `<i style="background:${getColor(10.0, 'pr_max')}"></i> 8&ndash;15<br>`;
+        this._div.innerHTML += `<i style="background:${getColor(16.0, 'pr_max')}"></i> 15+`;
     } else {
-        grades = [-10, 0, 10, 20, 30];
         this._div.innerHTML += `<strong>Max Temp (°C)</strong><br>`;
-    }
-    for (let i = 0; i < grades.length; i++) {
-        this._div.innerHTML += '<i style="background:' + getColor(grades[i] + 0.01, currentMetric) + '"></i> ' +
-            grades[i] + (grades[i + 1] ? '&ndash;' + grades[i + 1] + '<br>' : '+');
+        this._div.innerHTML += `<i style="background:${getColor(-5, 'tas_max')}"></i> &lt;0<br>`;
+        this._div.innerHTML += `<i style="background:${getColor(5, 'tas_max')}"></i> 0&ndash;10<br>`;
+        this._div.innerHTML += `<i style="background:${getColor(15, 'tas_max')}"></i> 10&ndash;20<br>`;
+        this._div.innerHTML += `<i style="background:${getColor(25, 'tas_max')}"></i> 20&ndash;30<br>`;
+        this._div.innerHTML += `<i style="background:${getColor(35, 'tas_max')}"></i> 30+`;
     }
 };
 mapLegend.addTo(map);
@@ -266,7 +276,7 @@ function generateDailyData(region, month, metric, numDays) {
 
 function initLineCharts() {
     const colors = { "Hebei": "#4ade80", "Henan": "#38bdf8", "Shandong": "#c084fc" };
-    const bgColors = { "Hebei": "rgba(74, 222, 128, 0.03)", "Henan": "rgba(56, 189, 248, 0.03)", "Shandong": "rgba(192, 132, 252, 0.03)" };
+    const bgColors = { "Hebei": "rgba(74, 222, 128, 0.12)", "Henan": "rgba(56, 189, 248, 0.12)", "Shandong": "rgba(192, 132, 252, 0.12)" };
 
     const totalDays = getDaysInMonth(currentMonth);
     const dayLabels = Array.from({ length: totalDays }, (_, i) => (i + 1).toString());
@@ -285,12 +295,10 @@ function initLineCharts() {
         if (rMin < globalMin) globalMin = rMin;
     });
 
-    // Dynamic padding setup
     let finalYMin = currentMetric === 'pr_max' ? 0 : Math.floor(globalMin - 2);
     let finalYMax = Math.ceil(globalMax * 1.15);
 
     targetRegions.forEach(region => {
-        const isLeftmost = (region === "Hebei");
         const ctx = document.getElementById(`chart-${region.toLowerCase()}`).getContext('2d');
         
         chartInstances[region] = new Chart(ctx, {
@@ -317,14 +325,20 @@ function initLineCharts() {
                     y: { 
                         min: finalYMin,
                         max: finalYMax,
-                        display: isLeftmost, 
-                        ticks: { color: '#bfdbfe', font: { size: 9 } }, 
-                        grid: { color: isLeftmost ? 'rgba(125, 211, 252, 0.08)' : 'transparent' },
+                        display: true, 
+                        ticks: { 
+                            color: '#bfdbfe', 
+                            font: { size: 9 },
+                            callback: function(value) {
+                                return Number(value).toFixed(1);
+                            }
+                        }, 
+                        grid: { color: 'rgba(125, 211, 252, 0.08)' },
                         title: {
-                            display: isLeftmost,
-                            text: currentMetric === 'pr_max' ? 'Precipitation (mm)' : 'Temperature (°C)',
+                            display: true,
+                            text: currentMetric === 'pr_max' ? 'Precip (mm)' : 'Temp (°C)',
                             color: '#bfdbfe',
-                            font: { size: 10, weight: 'bold' }
+                            font: { size: 9, weight: 'bold' }
                         }
                     },
                     x: { 
@@ -374,16 +388,15 @@ function updateAllLineCharts() {
         chart.options.scales.y.min = finalYMin;
         chart.options.scales.y.max = finalYMax;
         if (chart.options.scales.y.title) {
-            chart.options.scales.y.title.text = currentMetric === 'pr_max' ? 'Precipitation (mm)' : 'Temperature (°C)';
+            chart.options.scales.y.title.text = currentMetric === 'pr_max' ? 'Precip (mm)' : 'Temp (°C)';
         }
         chart.update('none'); 
     });
 }
 
-// ── CONTROL EVENT LISTENERS ──
+// ── CONTROL EVENT LISTENERS (UPDATED TO WATCH BUTTON GROUP CLICK TRAGETS) ──
 const slider = document.getElementById('month-slider');
 const monthDisplay = document.getElementById('month-display');
-const metricSelect = document.getElementById('metric-select');
 
 slider.addEventListener('input', function(e) {
     currentMonth = months[e.target.value];
@@ -392,10 +405,18 @@ slider.addEventListener('input', function(e) {
     updateAllLineCharts();
 });
 
-metricSelect.addEventListener('change', function(e) {
-    currentMetric = e.target.value;
-    updateMapLayer();
-    updateAllLineCharts();
+// Refactored to listen for toggle button adjustments natively without causing variable dropouts
+document.querySelectorAll('.metric-toggle-btn').forEach(button => {
+    button.addEventListener('click', function() {
+        // Dynamic styling toggle synchronization
+        document.querySelectorAll('.metric-toggle-btn').forEach(btn => btn.classList.remove('active'));
+        this.classList.add('active');
+        
+        // State update & dashboard repaint workflow triggers
+        currentMetric = this.getAttribute('data-metric');
+        updateMapLayer();
+        updateAllLineCharts();
+    });
 });
 
 window.addEventListener('load', async function() {
@@ -449,11 +470,9 @@ document.addEventListener("DOMContentLoaded", () => {
   function showAnnotation() {
     annotation.classList.remove("is-hidden");
     toggleButton.classList.remove("is-visible");
-
     setTimeout(hideAnnotation, 10000);
   }
 
   setTimeout(hideAnnotation, 10000);
-
   toggleButton.addEventListener("click", showAnnotation);
 });

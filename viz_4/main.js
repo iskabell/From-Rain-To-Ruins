@@ -105,9 +105,16 @@ function getColor(value, metric) {
     if (value === null || value === undefined) return '#e2e8f0';
     
     if (metric === 'pr_max') {
-        return value > 80  ? '#4a148c' : value > 40  ? '#7b1fa2' : value > 15  ? '#9c27b0' : value > 5   ? '#e040fb' : '#f3e5f5';
+        return value >= 15 ? '#4a148c' : 
+               value >= 10 ? '#7b1fa2' : 
+               value >= 5  ? '#9c27b0' : 
+               value >= 1  ? '#e040fb' : '#f3e5f5';
     } else {
-        return value > 42  ? '#b30000' : value > 35  ? '#e34a33' : value > 28  ? '#fc8d59' : value > 18  ? '#fdbb84' : '#fdd49e';
+        // UPDATED: Standardized to 10-unit steps hitting 30+ max bracket thresholding
+        return value >= 30 ? '#b71c1c' : 
+               value >= 20 ? '#e65100' : 
+               value >= 10 ? '#f57c00' : 
+               value >= 0  ? '#ffb74d' : '#fff3e0';
     }
 }
 
@@ -176,18 +183,24 @@ mapLegend.onAdd = function () {
     return this._div;
 };
 mapLegend.updateLegend = function() {
-    let grades;
     this._div.innerHTML = `<h4>Legend</h4>`;
+    
+    // FIX: Replaced loop template builders with explicit single-block HTML templates to avoid breaking structures
     if (currentMetric === 'pr_max') {
-        grades = [0, 5, 15, 40, 80];
         this._div.innerHTML += `<strong>Max Recorded (mm)</strong><br>`;
+        this._div.innerHTML += `<i style="background:${getColor(0.5, 'pr_max')}"></i> 0&ndash;1<br>`;
+        this._div.innerHTML += `<i style="background:${getColor(2.5, 'pr_max')}"></i> 1&ndash;5<br>`;
+        this._div.innerHTML += `<i style="background:${getColor(7.5, 'pr_max')}"></i> 5&ndash;10<br>`;
+        this._div.innerHTML += `<i style="background:${getColor(12.5, 'pr_max')}"></i> 10&ndash;15<br>`;
+        this._div.innerHTML += `<i style="background:${getColor(16.0, 'pr_max')}"></i> 15+`;
     } else {
-        grades = [0, 18, 28, 35, 42];
+        // UPDATED: Built layout block for the requested 10-unit increments ending at 30+
         this._div.innerHTML += `<strong>Max Temp (°C)</strong><br>`;
-    }
-    for (let i = 0; i < grades.length; i++) {
-        this._div.innerHTML += '<i style="background:' + getColor(grades[i] + 0.01, currentMetric) + '"></i> ' +
-            grades[i] + (grades[i + 1] ? '&ndash;' + grades[i + 1] + '<br>' : '+');
+        this._div.innerHTML += `<i style="background:${getColor(-5, 'tas_max')}"></i> &lt;0<br>`;
+        this._div.innerHTML += `<i style="background:${getColor(5, 'tas_max')}"></i> 0&ndash;10<br>`;
+        this._div.innerHTML += `<i style="background:${getColor(15, 'tas_max')}"></i> 10&ndash;20<br>`;
+        this._div.innerHTML += `<i style="background:${getColor(25, 'tas_max')}"></i> 20&ndash;30<br>`;
+        this._div.innerHTML += `<i style="background:${getColor(35, 'tas_max')}"></i> 30+`;
     }
 };
 mapLegend.addTo(map);
@@ -236,7 +249,7 @@ function generateDailyData(region, month, metric, numDays) {
 
 function initLineCharts() {
     const colors = { "KPK": "#4ade80", "Punjab": "#38bdf8", "Sindh": "#c084fc", "Balochistan": "#f472b6" };
-    const bgColors = { "KPK": "rgba(74, 222, 128, 0.03)", "Punjab": "rgba(56, 189, 248, 0.03)", "Sindh": "rgba(192, 132, 252, 0.03)", "Balochistan": "rgba(244, 114, 182, 0.03)" };
+    const bgColors = { "KPK": "rgba(74, 222, 128, 0.12)", "Punjab": "rgba(56, 189, 248, 0.12)", "Sindh": "rgba(192, 132, 252, 0.12)", "Balochistan": "rgba(244, 114, 182, 0.12)" };
 
     const totalDays = getDaysInMonth(currentMonth);
     const dayLabels = Array.from({ length: totalDays }, (_, i) => (i + 1).toString());
@@ -255,7 +268,6 @@ function initLineCharts() {
     });
 
     regions.forEach(region => {
-        const isLeftmost = (region === "KPK");
         const canvasEl = document.getElementById(`chart-${region.toLowerCase()}`);
         if (!canvasEl) return;
 
@@ -287,21 +299,20 @@ function initLineCharts() {
                         beginAtZero: currentMetric === 'pr_max',
                         min: currentMetric === 'pr_max' ? 0 : Math.floor(globalMin * 0.9),
                         max: globalMax > 0 ? globalMax * 1.1 : 10,
-                        display: isLeftmost, 
+                        display: true, 
                         ticks: { 
                             color: '#bfdbfe', 
                             font: { size: 9 },
-                            // FIX: Rounds long floats cleanly and drops scientific notation
                             callback: function(value) {
                                 return Number(value).toFixed(1);
                             }
                         }, 
-                        grid: { color: isLeftmost ? 'rgba(125, 211, 252, 0.08)' : 'transparent' },
+                        grid: { color: 'rgba(125, 211, 252, 0.08)' },
                         title: {
-                            display: isLeftmost,
+                            display: true,
                             text: yTitle,
                             color: '#bfdbfe',
-                            font: { size: 10, weight: 'bold' }
+                            font: { size: 9, weight: 'bold' }
                         }
                     },
                     x: { 

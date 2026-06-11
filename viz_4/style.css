@@ -100,9 +100,9 @@ section {
 /* ── BULLETPROOF CONTROLS PANEL ── */
 #controls {
     background: rgba(7, 19, 31, 0.6);
-    padding: 20px;
+    padding: 35px 100px; /* UPDATED: Added safety padding to left and right edges */
     border-radius: 8px;
-    margin-bottom: 20px;
+    margin-bottom: 40px;
     border: 1px solid rgba(125, 211, 252, 0.15);
     display: flex;
     flex-direction: column;
@@ -117,6 +117,7 @@ section {
     align-items: center;
     gap: 24px;
     width: 100%;
+    padding: 0 4px; /* Extra micro-padding baseline protection */
 }
 
 .slider-label {
@@ -124,7 +125,6 @@ section {
     font-size: 16px;
     color: #f8fafc;
     white-space: nowrap;
-    min-width: 160px;
 }
 
 #monthLabel {
@@ -173,33 +173,58 @@ input[type=range]::-webkit-slider-thumb:hover {
     background: #0ea5e9;
 }
 
+/* ── METRIC TOGGLE BUTTONS ── */
 .metric-selector {
     display: flex;
-    gap: 15px;
+    gap: 24px;
     align-items: center;
     width: 100%;
+    margin-top: 5px;
+    padding: 0 4px; /* Extra micro-padding baseline protection */
 }
 
-.metric-selector label {
+.metric-selector .selector-label {
     font-size: 14px;
-    font-weight: 500;
+    font-weight: 600;
     color: #f8fafc;
-    flex-shrink: 0;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
 }
 
-select {
-    padding: 6px 12px;
+.metric-btn-group {
+    display: inline-flex;
+    background: rgba(15, 23, 42, 0.6);
+    padding: 4px;
+    gap: 6px; 
+    border-radius: 8px;
+    border: 1px solid rgba(125, 211, 252, 0.12);
+}
+
+.metric-toggle-btn {
+    background: transparent;
+    color: #94a3b8;
+    border: none;
+    padding: 6px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: inherit;
     border-radius: 6px;
-    border: 1px solid rgba(125, 211, 252, 0.3);
-    background-color: #0f1f2e;
-    font-size: 14px;
-    color: #dbeafe;
-    outline: none;
     cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    outline: none;
+    white-space: nowrap;
 }
 
-select:focus {
-    border-color: #38bdf8;
+.metric-toggle-btn:hover:not(.active) {
+    color: #e2e8f0;
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.metric-toggle-btn.active {
+    background: #3182ce;
+    color: #ffffff;
+    box-shadow: 0 2px 8px rgba(49, 130, 206, 0.4), 
+                0 0 1px rgba(49, 130, 206, 0.5);
 }
 
 #map-wrapper {
@@ -433,209 +458,6 @@ select:focus {
     min-width: 0;
 }
 
-@media (max-width: 768px) {
-    .charts-grid {
-        flex-direction: column;
-    }
-    .chart-card {
-        height: 180px;
-    }
-    .slider-box {
-        grid-template-columns: 1fr;
-        gap: 12px;
-    }
-    .slider-label {
-        min-width: 0;
-    }
-}
-
-/* Remove the second popup after clicking Explore */
-#flood-intro {
-  display: none !important;
-}
-
-/* ── Left Sidebar Story Panel ── */
-
-.map-story-row {
-  display: grid;
-  grid-template-columns: minmax(270px, 340px) minmax(0, 1fr);
-  gap: 18px;
-  align-items: stretch;
-  width: 100%;
-}
-
-.story-panel {
-  min-height: 500px;
-  max-height: 500px;
-  overflow-y: auto;
-  padding: 22px;
-  border-radius: 18px;
-  background:
-    radial-gradient(circle at top left, rgba(56, 189, 248, 0.18), transparent 35%),
-    rgba(7, 19, 31, 0.92);
-  border: 1px solid rgba(125, 211, 252, 0.22);
-  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.35);
-  color: #dbeafe;
-}
-
-.story-step {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 14px;
-  padding: 6px 12px;
-  border-radius: 999px;
-  background: rgba(56, 189, 248, 0.14);
-  border: 1px solid rgba(56, 189, 248, 0.24);
-  color: #7dd3fc;
-  font-size: 0.78rem;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.story-panel h2 {
-  margin: 0 0 8px;
-  color: #f8fafc;
-  font-size: 1.5rem;
-  line-height: 1.15;
-}
-
-.story-time {
-  margin-bottom: 16px;
-  color: #94a3b8;
-  font-family: monospace;
-  font-size: 0.95rem;
-}
-
-.story-panel p {
-  margin: 0 0 14px;
-  color: #cbd5e1;
-  font-size: 0.94rem;
-  line-height: 1.62;
-}
-
-.story-panel strong {
-  color: #f8fafc;
-}
-
-.story-highlight {
-  color: #38bdf8;
-  font-weight: 800;
-}
-
-.story-metric-grid {
-  display: grid;
-  gap: 8px;
-  margin: 16px 0;
-}
-
-.story-metric {
-  padding: 10px 12px;
-  border-radius: 12px;
-  background: rgba(15, 31, 46, 0.86);
-  border: 1px solid rgba(125, 211, 252, 0.16);
-  font-size: 0.84rem;
-  line-height: 1.45;
-  color: #bfdbfe;
-}
-
-.story-metric strong {
-  color: #38bdf8;
-}
-
-.story-region-notes {
-  margin-top: 16px;
-  padding-top: 14px;
-  border-top: 1px solid rgba(125, 211, 252, 0.18);
-}
-
-.story-region-notes h3 {
-  margin: 0 0 10px;
-  color: #f8fafc;
-  font-size: 0.95rem;
-}
-
-.story-region-notes ul {
-  margin: 0;
-  padding-left: 18px;
-}
-
-.story-region-notes li {
-  margin-bottom: 7px;
-  color: #cbd5e1;
-  font-size: 0.84rem;
-  line-height: 1.45;
-}
-
-#map-wrapper {
-  min-width: 0;
-}
-
-@media (max-width: 900px) {
-  .map-story-row {
-    grid-template-columns: 1fr;
-  }
-
-  .story-panel {
-    min-height: auto;
-    max-height: none;
-  }
-}
-
-/* Map annotation callout */
-#map-wrapper {
-  position: relative;
-}
-
-.map-annotation {
-  position: absolute;
-  top: 18px;
-  right: 18px;
-  z-index: 10;
-  width: min(300px, calc(100% - 36px));
-  padding: 16px 18px;
-  border-radius: 16px;
-  background: rgba(248, 250, 252, 0.88);
-  color: #0f172a;
-  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.28);
-  border: 1px solid rgba(15, 23, 42, 0.12);
-  pointer-events: none;
-}
-
-.map-annotation .annotation-label {
-  display: inline-block;
-  margin-bottom: 8px;
-  color: #0369a1;
-  font-size: 0.72rem;
-  font-weight: 900;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-}
-
-.map-annotation p {
-  margin: 0;
-  font-size: 0.92rem;
-  line-height: 1.45;
-}
-
-.map-annotation strong {
-  color: #0f172a;
-}
-
-@media (max-width: 800px) {
-  .map-annotation {
-    position: static;
-    width: auto;
-    margin: 12px;
-  }
-}
-
-/* Remove the second popup after clicking Explore */
-#flood-intro {
-  display: none !important;
-}
-
 /* ── Left Sidebar Story Panel ── */
 .map-story-row {
   display: grid;
@@ -836,6 +658,7 @@ select:focus {
   color: #ffffff;
 }
 
+/* ── RESPONSIVE DESIGN MEDIA QUERIES ── */
 @media (max-width: 900px) {
   .map-story-row {
     grid-template-columns: 1fr;
@@ -847,168 +670,31 @@ select:focus {
   }
 }
 
-/* ===== FIX: controls textbox overflow ===== */
-
-#controls {
-  width: 100%;
-  max-width: 100%;
-  overflow: hidden;
-  box-sizing: border-box;
+@media (max-width: 768px) {
+    .charts-grid {
+        flex-direction: column;
+    }
+    .chart-card {
+        height: 180px;
+    }
 }
 
-.slider-box {
-  width: 100%;
-  max-width: 100%;
-  grid-template-columns: minmax(0, 250px) minmax(0, 1fr);
-  overflow: hidden;
+@media (max-width: 600px) {
+    .metric-selector {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    .metric-btn-group {
+        width: 100%;
+    }
+    .metric-toggle-btn {
+        flex: 1;
+        text-align: center;
+    }
 }
 
-.slider-label {
-  min-width: 0;
-  max-width: 100%;
-  white-space: normal;
-  overflow-wrap: break-word;
-}
-
-.slider-container {
-  width: 100%;
-  min-width: 0;
-  max-width: 100%;
-  overflow: hidden;
-}
-
-.slider-container input[type="range"] {
-  min-width: 0;
-  max-width: 100%;
-}
-
-.metric-selector {
-  width: 100%;
-  max-width: 100%;
-  min-width: 0;
-  flex-wrap: wrap;
-  overflow: hidden;
-}
-
-.metric-selector label {
-  min-width: 0;
-  white-space: normal;
-}
-
-.metric-selector select {
-  max-width: 100%;
-  min-width: 220px;
-  white-space: normal;
-}
-
-/* smaller screen fix */
-@media (max-width: 900px) {
-  .slider-box {
-    grid-template-columns: 1fr;
-    gap: 10px;
-  }
-
-  .slider-container {
-    grid-template-columns: auto minmax(0, 1fr) auto;
-  }
-
-  .metric-selector {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .metric-selector select {
-    width: 100%;
-    min-width: 0;
-  }
-}
-
-/* ===== REAL FIX: make controls fit by stacking them cleanly ===== */
-
-#controls {
-  width: 100% !important;
-  max-width: 100% !important;
-  padding: 18px !important;
-  overflow: visible !important;
-  box-sizing: border-box !important;
-}
-
-/* Put Month label ABOVE the slider instead of beside it */
-.slider-box {
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: stretch !important;
-  gap: 10px !important;
-  width: 100% !important;
-  max-width: 100% !important;
-}
-
-/* Allow "Month: January" to wrap instead of forcing one long line */
-.slider-label {
-  width: 100% !important;
-  min-width: 0 !important;
-  max-width: 100% !important;
-  white-space: normal !important;
-  overflow-wrap: break-word !important;
-  font-size: 1.05rem !important;
-  line-height: 1.25 !important;
-}
-
-/* Make Jan — slider — Dec stay inside the box */
-.slider-container {
-  display: grid !important;
-  grid-template-columns: 36px minmax(0, 1fr) 36px !important;
-  align-items: center !important;
-  gap: 10px !important;
-  width: 100% !important;
-  min-width: 0 !important;
-  max-width: 100% !important;
-}
-
-.slider-container span {
-  font-size: 0.9rem !important;
-  white-space: nowrap !important;
-  text-align: center !important;
-}
-
-.slider-container input[type="range"],
-#monthSlider {
-  width: 100% !important;
-  min-width: 0 !important;
-  max-width: 100% !important;
-}
-
-/* Make metric selector fit */
-.metric-selector {
-  display: grid !important;
-  grid-template-columns: max-content minmax(0, 340px) !important;
-  align-items: center !important;
-  gap: 12px !important;
-  width: 100% !important;
-  max-width: 100% !important;
-  overflow: visible !important;
-}
-
-.metric-selector label {
-  min-width: 0 !important;
-  white-space: nowrap !important;
-  font-size: 0.95rem !important;
-}
-
-#controls select {
-  width: 100% !important;
-  min-width: 0 !important;
-  max-width: 100% !important;
-  font-size: 0.95rem !important;
-}
-
-/* If screen is narrow, stack the metric label/dropdown too */
-@media (max-width: 700px) {
-  .metric-selector {
-    grid-template-columns: 1fr !important;
-  }
-
-  .metric-selector label {
-    white-space: normal !important;
-  }
+/* Remove the second popup after clicking Explore */
+#flood-intro {
+  display: none !important;
 }
